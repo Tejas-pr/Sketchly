@@ -1,12 +1,15 @@
-import { Button } from "@workspace/ui/components/button"
+import { SignoutButton } from "@/components/signout";
 
-export default function Page() {
+export default async function Page() {
   return (
-    <div className="flex items-center justify-center min-h-svh">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Hello World</h1>
-        <Button size="sm">Button</Button>
+    <div className="relative min-h-screen flex items-center justify-center">
+      {/* Logout button at top-right */}
+      <div className="absolute top-4 right-4">
+        <SignoutButton />
       </div>
+
+      {/* Centered title */}
+      <h1 className="text-9xl font-extrabold text-center">SKETCHLY</h1>
     </div>
-  )
+  );
 }
