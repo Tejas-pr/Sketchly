@@ -13,7 +13,7 @@ import {
 } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
-import { SignIn } from "@/lib/types/interfaces";
+import { SignIn } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
 
