@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
 import { useState } from "react";
-import { SignUp } from "@/lib/types/interfaces";
+import { SignUp } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
 
