@@ -32,7 +32,6 @@ This project uses **Docker** to easily run the database and manage Prisma migrat
 
 ```bash
 docker run -d \
-  --name sketchly-db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_DB=sketchly \

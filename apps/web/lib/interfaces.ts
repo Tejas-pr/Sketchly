@@ -19,3 +19,7 @@ export interface UseSocketResult {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface LoginFormProps extends React.ComponentProps<"div"> {
+  onSuccess?: () => void;
+}

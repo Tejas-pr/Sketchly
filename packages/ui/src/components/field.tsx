@@ -149,7 +149,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
         className,
       )}
       {...props}
-    />
+    ></p>
   );
 }
 

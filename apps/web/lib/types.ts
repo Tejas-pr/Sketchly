@@ -12,3 +12,7 @@ export type Shape = {
     centerY: number;
     radius: number;
 }
+
+export type MyPageProps = {
+    params: Promise<{ roomId: string }>;
+};

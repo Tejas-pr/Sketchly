@@ -18,14 +18,15 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
 import { useState } from "react";
-import { SignUp } from "@/lib/interfaces";
+import { LoginFormProps, SignUp } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
 
 export function SignupForm({
+  onSuccess,
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: LoginFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<SignUp>({
     name: "",
@@ -38,8 +39,8 @@ export function SignupForm({
       const response = await authClient.signIn.social({
         provider: "google",
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Signed in successfully with Google!");
       }
     } catch (e) {
@@ -53,8 +54,8 @@ export function SignupForm({
       const response = await authClient.signIn.social({
         provider: "github",
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Signed in successfully with GitHub!");
       }
     } catch (e) {
@@ -71,8 +72,8 @@ export function SignupForm({
         email: formData.email,
         password: formData.password,
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Account created successfully! 🎉");
       }
     } catch (e) {
@@ -174,7 +175,7 @@ export function SignupForm({
 
           {/* Submit */}
           <Field className="mb-2">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full hover:cursor-pointer">
               Create Account
             </Button>
           </Field>
@@ -187,7 +188,7 @@ export function SignupForm({
               onClick={signup_with_github}
               variant="outline"
               type="button"
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-2 w-full hover:cursor-pointer"
             >
               <Github className="w-5 h-5" />
               Github
@@ -197,7 +198,7 @@ export function SignupForm({
               onClick={signup_with_google}
               variant="outline"
               type="button"
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-2 w-full hover:cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

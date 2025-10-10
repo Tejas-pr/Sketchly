@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "better-auth": "^1.3.27",
-    "@repo/db": "workspace:*"
+    "@repo/db": "workspace:*",
+    "@types/node": "^20.19.9",
+    "@workspace/typescript-config": "workspace:*",
+    "better-auth": "^1.3.27"
   },
   "exports": {
     "./server": "./src/auth.ts",

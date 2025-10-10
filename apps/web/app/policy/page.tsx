@@ -18,7 +18,7 @@ export default function TermsAndConditions() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link href="/signup">
-          <Button variant="ghost" className="mb-6">
+          <Button variant="ghost" className="mb-6 hover:cursor-pointer">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to App
           </Button>
@@ -334,7 +334,7 @@ export default function TermsAndConditions() {
 
         <div className="mt-6 text-center">
           <Link href="/signup">
-            <Button size="lg" className="font-medium">
+            <Button size="lg" className="font-medium hover:cursor-pointer">
               I Accept the Terms
             </Button>
           </Link>

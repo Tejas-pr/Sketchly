@@ -42,6 +42,10 @@ export function Dropdownmenu() {
     toast("Successfully Signed out!!");
   };
 
+  const handleClosePopup = () => {
+    setPopupType(null);
+  }
+
   return (
     <>
       {/* Dropdown Menu */}
@@ -122,8 +126,8 @@ export function Dropdownmenu() {
             />
 
             <CardContent className="pt-1">
-              {popupType === "login" && <LoginForm />}
-              {popupType === "signup" && <SignupForm />}
+              {popupType === "login" && <LoginForm onSuccess={handleClosePopup} />}
+              {popupType === "signup" && <SignupForm onSuccess={handleClosePopup} />}
               {popupType === "live-collaboration" && <LiveCollaboration />}
             </CardContent>
           </Card>

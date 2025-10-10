@@ -1,6 +1,6 @@
 "use client";
 
-import { Shapes, Github } from "lucide-react";
+import { Info, Shapes, Github } from "lucide-react";
 import { authClient } from "@repo/auth/client";
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
@@ -13,14 +13,15 @@ import {
 } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
-import { SignIn } from "@/lib/interfaces";
+import { LoginFormProps, SignIn } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
 
 export function LoginForm({
+  onSuccess,
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: LoginFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<SignIn>({
     email: "",
@@ -32,8 +33,8 @@ export function LoginForm({
       const response = await authClient.signIn.social({
         provider: "google",
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Signed in successfully with Google!");
       }
     } catch (e) {
@@ -47,8 +48,8 @@ export function LoginForm({
       const response = await authClient.signIn.social({
         provider: "github",
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Signed in successfully with GitHub!");
       }
     } catch (e) {
@@ -64,8 +65,8 @@ export function LoginForm({
         email: formData.email,
         password: formData.password,
       });
-      if (response) {
-        router.push("/");
+      if (!response.error) {
+        onSuccess?.();
         toast.success("Logged in successfully! 🎉");
       }
     } catch (e) {
@@ -86,7 +87,6 @@ export function LoginForm({
     >
       <form onSubmit={login} className="flex flex-col gap-6">
         <FieldGroup>
-          {/* Header */}
           <div className="flex flex-col items-center gap-2 text-center">
             <a
               href="/"
@@ -117,7 +117,7 @@ export function LoginForm({
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="sketchlylove@love.com"
               required
               value={formData.email}
               onChange={(e) =>
@@ -132,7 +132,7 @@ export function LoginForm({
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="••••••••"
               required
               value={formData.password}
               onChange={(e) =>
@@ -142,31 +142,31 @@ export function LoginForm({
           </Field>
 
           {/* Submit */}
-          <Field>
-            <Button type="submit" className="w-full">
-              Login
+          <Field className="mb-2">
+            <Button type="submit" className="w-full hover:cursor-pointer">
+              Log in
             </Button>
           </Field>
 
           <FieldSeparator>Or</FieldSeparator>
 
           {/* Social Logins */}
-          <Field className="grid gap-4 sm:grid-cols-2">
+          <Field className="grid gap-4 sm:grid-cols-2 mt-2">
             <Button
               onClick={login_with_github}
               variant="outline"
               type="button"
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-2 w-full hover:cursor-pointer"
             >
               <Github className="w-5 h-5" />
-              GitHub
+              Github
             </Button>
 
             <Button
               onClick={login_with_google}
               variant="outline"
               type="button"
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-2 w-full hover:cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -184,18 +184,16 @@ export function LoginForm({
         </FieldGroup>
       </form>
 
-      <FieldDescription>
-        <div className="px-6 text-center text-xs text-muted-foreground mt-4">
-          By logging in, you agree to our{" "}
-          <a href="/policy" className="underline hover:text-primary">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="/policy" className="underline hover:text-primary">
-            Privacy Policy
-          </a>
-          .
-        </div>
+      <FieldDescription className="px-6 text-center text-xs text-muted-foreground mt-4 pt-6">
+        By loggin in, you agree to our{" "}
+        <a href="/policy" className="underline hover:text-primary">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href="/policy" className="underline hover:text-primary">
+          Privacy Policy
+        </a>
+        .
       </FieldDescription>
     </div>
   );
