@@ -1,93 +1,105 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import { Copy, Check, Users } from "lucide-react";
+import { cn } from "@workspace/ui/lib/utils";
+import { Input } from "@workspace/ui/components/input";
+import { Button } from "@workspace/ui/components/button";
+import { toast } from "@workspace/ui/components/sonner";
 
 export function LiveCollaboration() {
   const [roomName, setRoomName] = useState("");
   const [copied, setCopied] = useState(false);
 
   const baseUrl = useMemo(() => {
-    const envUrl = process.env.VITE_PUBLIC_FE_URL;
+    const envUrl = process.env.NEXT_PUBLIC_FE_URL;
     if (envUrl) return envUrl;
-
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.location.origin;
     }
-    return '';
+    return "";
   }, []);
 
-  const link = roomName ? `${baseUrl}/canvas/${roomName}` : '';
+  const link = roomName ? `${baseUrl}/canvas/${roomName}` : "";
 
   const handleCopy = () => {
     if (!roomName) return;
     navigator.clipboard.writeText(link);
     setCopied(true);
+    toast.success("Link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="rounded-lg">
-        <div className="px-4 py-3">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full ">
-              <Users className="h-5 w-5 text-white" />
-            </div>
-            <h2 className="text-2xl font-semibold text-white">
-              Live Collaboration
-            </h2>
+    <div
+      className={cn(
+        "w-full max-w-2xl mx-auto p-4 transition-colors",
+        "bg-white text-gray-900 border-gray-200",
+        "dark:bg-[#1c1c1f] dark:text-gray-100 dark:border-gray-700"
+      )}
+    >
+      <div className="flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
+            <Users className="h-5 w-5 text-primary" />
           </div>
-          <p className="text-slate-300 text-sm leading-relaxed mt-2">
-            Invite people to collaborate on your drawing. Sessions are end-to-end encrypted and fully private.
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Live Collaboration
+          </h2>
         </div>
 
-        <div className="px-8 py-3 space-y-6">
-          <div className="space-y-2">
-            <label
-              htmlFor="room"
-              className="text-sm font-medium text-slate-200 block"
-            >
-              Room Name
-            </label>
-            <input
-              id="room"
-              type="text"
-              placeholder="Enter room name"
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              className="flex h-12 w-full rounded-md border border-slate-600 bg-slate-800 px-4 py-2 text-base text-white ring-offset-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-            />
-          </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Invite others to collaborate on your drawing in real time. Sessions
+          are end-to-end encrypted and fully private.
+        </p>
 
-          {roomName && (
-            <div className="rounded-md bg-slate-800 border border-slate-700 px-4 py-3">
-              <p className="text-xs font-medium text-slate-400 mb-1">
-                Share this link
-              </p>
-              <p className="text-sm text-slate-200 font-mono break-all">
-                {link}
-              </p>
-            </div>
-          )}
-
-          <button
-            onClick={handleCopy}
-            disabled={!roomName}
-            className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-6 text-base font-medium text-white shadow-sm transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50"
+        {/* Input Field */}
+        <div className="mt-4 space-y-2">
+          <label
+            htmlFor="room"
+            className="text-sm font-medium text-muted-foreground"
           >
-            {copied ? (
-              <>
-                <Check className="h-5 w-5" />
-                Link Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="h-5 w-5" />
-                Copy Link
-              </>
-            )}
-          </button>
+            Room Name
+          </label>
+          <Input
+            id="room"
+            type="text"
+            placeholder="Enter room name"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            className="h-12 text-base"
+          />
         </div>
+
+        {/* Link Preview */}
+        {roomName && (
+          <div className="mt-4 rounded-lg border px-4 py-3 text-sm bg-muted/50 border-muted-foreground/20">
+            <p className="text-xs font-medium text-muted-foreground mb-1">
+              Share this link
+            </p>
+            <p className="font-mono text-sm break-all">{link}</p>
+          </div>
+        )}
+
+        {/* Copy Button */}
+        <Button
+          onClick={handleCopy}
+          disabled={!roomName}
+          className="w-full h-12 mt-4 inline-flex items-center justify-center gap-2 text-base"
+        >
+          {copied ? (
+            <>
+              <Check className="h-5 w-5" />
+              Link Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="h-5 w-5" />
+              Copy Link
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

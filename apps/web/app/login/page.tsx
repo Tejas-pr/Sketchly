@@ -1,9 +1,21 @@
 import { LoginForm } from "@/components/login-form";
+import { FlickeringGrid } from "@workspace/ui/components/ui/shadcn-io/flickering-grid";
 
 export default function LoginPage() {
   return (
-    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <div className="relative h-screen flex items-center justify-center">
+      {/* Background */}
+      <FlickeringGrid
+        className="absolute inset-0"
+        squareSize={5}
+        gridGap={6}
+        flickerChance={0.3}
+        color="rgb(100, 100, 100)"
+        maxOpacity={0.2}
+      />
+
+      {/* Foreground content */}
+      <div className="relative z-10 w-full max-w-md p-8 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-lg dark:bg-[#1c1c1f] dark:text-gray-100 dark:border-gray-700">
         <LoginForm />
       </div>
     </div>

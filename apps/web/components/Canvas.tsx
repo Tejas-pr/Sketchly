@@ -19,6 +19,7 @@ import {
   Minus,
 } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
+import { ModeToggle } from "./theme-toggle";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -123,7 +124,10 @@ export default function Canvas({ roomId }: CanvasProps) {
   return (
     <>
       <div className='absolute top-5 left-3 max-w-full z-50'>
-        <Dropdownmenu />
+          <Dropdownmenu />
+      </div>
+      <div className='absolute top-5 right-3 max-w-full z-50'>
+          <ModeToggle />
       </div>
       <div className='absolute bottom-5 left-1/2 max-w-full -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
