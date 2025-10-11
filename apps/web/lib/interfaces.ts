@@ -16,7 +16,6 @@ export interface CanvasProps {
 export interface UseSocketResult {
   socket: WebSocket | null;
   isConnected: boolean;
-  isLoading: boolean;
   error: string | null;
 }
 
