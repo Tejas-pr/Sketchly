@@ -16,6 +16,9 @@ export interface CanvasProps {
 export interface UseSocketResult {
   socket: WebSocket | null;
   isConnected: boolean;
-  isLoading: boolean;
   error: string | null;
+}
+
+export interface LoginFormProps extends React.ComponentProps<"div"> {
+  onSuccess?: () => void;
 }

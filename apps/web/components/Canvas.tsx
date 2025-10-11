@@ -19,11 +19,15 @@ import {
   Minus,
 } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
+import { ModeToggle } from "./theme-toggle";
+import { ProfileMenu } from "./profile-menu";
+import { useLoader } from "@/providers/loader-provider";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
   const [selectedShape, setSelectedShape] = useState<string | null>(null);
-  const { socket, isConnected, isLoading, error } = useSocket(roomId);
+  const { loading } = useLoader();
+  const { socket, isConnected, error } = useSocket(roomId);
 
   useEffect(() => {
     if (myRef.current) {
@@ -31,7 +35,7 @@ export default function Canvas({ roomId }: CanvasProps) {
     }
   }, [roomId]);
 
-  if (roomId && isLoading) {
+  if (roomId && loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-[#121212] z-50">
         <Spinner variant="bars" size={35} />
@@ -123,7 +127,13 @@ export default function Canvas({ roomId }: CanvasProps) {
   return (
     <>
       <div className='absolute top-5 left-3 max-w-full z-50'>
-        <Dropdownmenu />
+          <Dropdownmenu />
+      </div>
+      <div className='absolute top-5 right-3 max-w-full z-50'>
+          <div className="flex items-center justify-center gap-5">
+            <ProfileMenu />
+            <ModeToggle />
+          </div>
       </div>
       <div className='absolute bottom-5 left-1/2 max-w-full -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
