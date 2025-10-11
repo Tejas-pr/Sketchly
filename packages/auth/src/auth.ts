@@ -9,7 +9,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    // callbackURL: "/dashboard"
+    callbackURL: "/"
   },
   socialProviders: {
     google: {

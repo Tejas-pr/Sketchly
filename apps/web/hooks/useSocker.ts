@@ -1,12 +1,13 @@
 "use client";
 import { UseSocketResult } from "@/lib/interfaces";
+import { useLoader } from "@/providers/loader-provider";
 import { useEffect, useRef, useState } from "react";
 
 export function useSocket(roomId: string | undefined | null): UseSocketResult {
   const [isConnected, setIsConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const socketRef = useRef<WebSocket | null>(null);
+  const { setLoading } = useLoader();
 
   useEffect(() => {
     if(!roomId || roomId == undefined) {
@@ -18,11 +19,11 @@ export function useSocket(roomId: string | undefined | null): UseSocketResult {
     if (!wsUrl) {
       console.error("❌ No WebSocket URL provided!");
       setError("No WebSocket URL provided");
-      setIsLoading(false);
+      setLoading(false);
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     const socket = new WebSocket(wsUrl);
@@ -30,13 +31,13 @@ export function useSocket(roomId: string | undefined | null): UseSocketResult {
 
     socket.onopen = () => {
       setIsConnected(true);
-      setIsLoading(false);
+      setLoading(false);
     };
 
     socket.onerror = (err) => {
       console.error("WebSocket error:", err);
       setError("Failed to connect");
-      setIsLoading(false);
+      setLoading(false);
     };
 
     socket.onclose = () => {
@@ -51,7 +52,6 @@ export function useSocket(roomId: string | undefined | null): UseSocketResult {
   return {
     socket: socketRef.current,
     isConnected,
-    isLoading,
     error,
   };
 }
