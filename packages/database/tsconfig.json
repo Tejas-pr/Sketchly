@@ -1,9 +1,14 @@
 {
   "extends": "@workspace/typescript-config/base.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true
   },
-  "include": ["src", "prisma", "generated"],
-  "exclude": ["node_modules", "dist", "migrations"]
+  "include": ["src/**/*"]
 }

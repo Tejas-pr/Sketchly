@@ -1,7 +1,11 @@
 {
     "extends": "@workspace/typescript-config/base.json",
     "compilerOptions": {
-        "rootDir": "src",
-        "outDir": "./dist"
-    }
+        "rootDir": "./src",  // Tells the compiler where to find the source files
+        "outDir": "./dist",  // Specifies where to output the compiled JavaScript
+        "module": "NodeNext", // For modern Node.js projects, use "NodeNext" or "ESNext"
+        "moduleResolution": "NodeNext",
+        "target": "ES2022"
+    },
+    "include": ["src/**/*"]
 }

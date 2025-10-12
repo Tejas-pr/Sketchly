@@ -1,5 +1,11 @@
-import { auth } from "@repo/auth/server";
+import { prisma } from "@repo/db";
+import { auth } from "@repo/auth";
 import type { IncomingMessage } from "http";
+
+async function call() {
+  console.log(">>>>>>>>>>", await prisma.user.findFirst());
+}
+call();
 
 export async function getSessionFromRequest(
   req: IncomingMessage,

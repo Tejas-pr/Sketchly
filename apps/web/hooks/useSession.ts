@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { authClient } from "@repo/auth/client";
+import { authClient } from "@repo/auth";
 import { SessionData } from "@/lib/types";
 import { useLoader } from "@/providers/loader-provider";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Info, Shapes, Github } from "lucide-react";
-import { authClient } from "@repo/auth/client";
+import { authClient } from "@repo/auth";
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import {

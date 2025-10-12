@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { authClient } from "@repo/auth/client";
+import { authClient } from "@repo/auth";
 import {
   DropdownMenu,
   DropdownMenuContent,

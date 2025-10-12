@@ -2,19 +2,23 @@
   "name": "ws-server",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b",
-    "dev": "tsc -b && node dist/index.js"
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@repo/auth": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
+    "@repo/db": "workspace:*",
     "@types/ws": "^8.18.1",
+    "@workspace/typescript-config": "workspace:*",
     "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
   }
 }
