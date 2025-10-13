@@ -45,6 +45,7 @@ export class Draw {
     }
 
     setTool(tool: Tools | null) {
+        console.log("?>>>>>>>>>>>>", tool);
         this.selectedTool = tool;
     }
 
@@ -74,8 +75,6 @@ export class Draw {
         if(this.clicked) {
             const width = e.offsetX - this.startX;
             const height = e.offsetY - this.startY;
-            console.log(">>>>>>>>>width", width);
-            console.log(">>>>>>>>>height", height);
             this.clearCanvas();
             const selectedShape = this.selectedTool;
             const selectedTool = this.selectedTool;
@@ -148,7 +147,6 @@ export class Draw {
         }
 
         this.existingShapes.push(shape);
-        console.log(">>>>>>>>>>>>", this.existingShapes);
     }
 
     clearCanvas() {

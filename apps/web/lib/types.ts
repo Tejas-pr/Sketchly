@@ -43,7 +43,7 @@ export type SessionData = {
     session: Session;
 } | null;
 
-export type Tools = "rectangle" | "circle" | "triangle" | "diamond" | "arrow" | "line" | "pencil" | null;
+export type Tools = "rectangle" | "circle" | "triangle" | "diamond" | "arrow" | "line" | "pencil" | "mousepointer" | "text" | "eraser" | null;
 
 export type ShapeOption = {
   title: string;

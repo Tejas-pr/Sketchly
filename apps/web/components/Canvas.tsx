@@ -16,6 +16,11 @@ import {
   Diamond,
   ArrowRight,
   Minus,
+  Pencil,
+  MousePointer2,
+  Eraser,
+  TypeOutline,
+  Plus,
 } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
@@ -24,10 +29,16 @@ import { useLoader } from "@/providers/loader-provider";
 import { Draw } from "@/app/drawingJS/Draw";
 import { useTheme } from "next-themes";
 import { ShapeOption, Tools } from "@/lib/types";
+import { Button } from "@workspace/ui/components/button";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "@workspace/ui/components/button-group";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
-  const [selectedShape, setSelectedShape] = useState<Tools>(null);
+  const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
   const { loading } = useLoader();
   const { socket, isConnected, error } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
@@ -138,6 +149,58 @@ export default function Canvas({ roomId }: CanvasProps) {
       ),
       id: "line",
     },
+    {
+      title: "Pencil",
+      icon: (
+        <Pencil
+          className={`h-full w-full ${
+            selectedShape === "pencil"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "pencil",
+    },
+    {
+      title: "Mouse Pointer",
+      icon: (
+        <MousePointer2
+          className={`h-full w-full ${
+            selectedShape === "mousepointer"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "mousepointer",
+    },
+    {
+      title: "Text",
+      icon: (
+        <TypeOutline
+          className={`h-full w-full ${
+            selectedShape === "text"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "text",
+    },
+    {
+      title: "Eraser",
+      icon: (
+        <Eraser
+          className={`h-full w-full ${
+            selectedShape === "eraser"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "eraser",
+    },
   ];
 
   const handleResetCanvas = () => {
@@ -153,6 +216,23 @@ export default function Canvas({ roomId }: CanvasProps) {
           <div className="flex items-center justify-center gap-5">
             <ProfileMenu />
             <ModeToggle />
+          </div>
+      </div>
+      <div className='absolute bottom-5 left-3 max-w-full z-50'>
+          <div className="flex items-center justify-center gap-5">
+            <ButtonGroup>
+              <Button size="icon" variant="secondary">
+                +
+              </Button>
+              <ButtonGroupSeparator />
+              <Button variant="secondary">
+                100 %
+              </Button>
+              <ButtonGroupSeparator />
+              <Button size="icon" variant="secondary">
+                -
+              </Button>
+            </ButtonGroup>
           </div>
       </div>
       <div className='absolute bottom-5 left-1/2 max-w-full -translate-x-1/2 z-50'>
