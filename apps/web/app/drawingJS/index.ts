@@ -1,6 +1,6 @@
 import { Shape } from "@/lib/types";
 
-export function initDraw(canvas: HTMLCanvasElement, roomId?: string) {
+export function initDraw(canvas: HTMLCanvasElement, roomId?: string, selectedShape?:string | null) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -32,7 +32,7 @@ export function initDraw(canvas: HTMLCanvasElement, roomId?: string) {
 
         // when you lift the mouse then add that to the above array
         existingShapes.push({
-            type: "rect",
+            type: "rectangle",
             x: startX,
             y: startY,
             width,
@@ -63,7 +63,7 @@ function clearCanvas(existingShapes: Shape[], canvas: HTMLCanvasElement, ctx: Ca
 
     // After clearing drawing new shapes render the shapes that are in the array
     existingShapes.map((shape) => {
-        if(shape.type === "rect") {
+        if(shape.type === "rectangle") {
             ctx.strokeStyle = "white";
             ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
         }

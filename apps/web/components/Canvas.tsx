@@ -22,16 +22,33 @@ import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
 import { ProfileMenu } from "./profile-menu";
 import { useLoader } from "@/providers/loader-provider";
+import { Draw } from "@/app/drawingJS/Draw";
+import { useTheme } from "next-themes";
+import { ShapeOption, Tools } from "@/lib/types";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
-  const [selectedShape, setSelectedShape] = useState<string | null>(null);
+  const [selectedShape, setSelectedShape] = useState<Tools>(null);
   const { loading } = useLoader();
   const { socket, isConnected, error } = useSocket(roomId);
+  const [drawing, setDrawing] = useState<Draw>();
+  const { theme, systemTheme } = useTheme();
+  const activeTheme = theme === "system" ? systemTheme : theme;
+
+  useEffect(() => {
+    drawing?.setTool(selectedShape);
+    drawing?.setTheme(activeTheme);
+  }, [selectedShape, drawing, activeTheme]);
 
   useEffect(() => {
     if (myRef.current) {
-      initDraw(myRef.current, roomId);
+      // initDraw(myRef.current, roomId, selectedShape);
+      const g = new Draw(myRef.current);
+      setDrawing(g);
+      g.initMouseHandler();
+      return () => {
+          g.destroy();
+      }
     }
   }, [roomId]);
 
@@ -43,7 +60,7 @@ export default function Canvas({ roomId }: CanvasProps) {
     );
   }
 
-  const shapes = [
+  const shapes: ShapeOption[] = [
     {
       title: "Rectangle",
       icon: (
