@@ -13,6 +13,10 @@ export class Draw {
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
+        // Set canvas size to match window
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        
         const ctx = this.canvas.getContext("2d");
         if(!ctx) {
             throw new Error("Could not get 2D context");
@@ -24,6 +28,14 @@ export class Draw {
         this.existingShapes = [];
         this.selectedTool = "";
         this.selectedTheme = "dark";
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.renderBackground();
+            this.clearCanvas();
+        });
     }
 
     initMouseHandler() {
@@ -136,6 +148,7 @@ export class Draw {
         }
 
         this.existingShapes.push(shape);
+        console.log(">>>>>>>>>>>>", this.existingShapes);
     }
 
     clearCanvas() {
@@ -167,4 +180,9 @@ export class Draw {
         this.canvas.removeEventListener("mousemove", this.mouseMove)
     }
 
+    clear() {
+        this.clicked = false;
+        this.existingShapes = [];
+        this.clearCanvas();
+    }
 }

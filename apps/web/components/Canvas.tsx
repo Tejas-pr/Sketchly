@@ -1,5 +1,4 @@
 "use client";
-import { initDraw } from "@/app/drawingJS";
 import { useSocket } from "@/hooks/useSocker";
 import { useEffect, useRef, useState } from "react";
 import { CanvasProps } from "@/lib/interfaces";
@@ -141,10 +140,14 @@ export default function Canvas({ roomId }: CanvasProps) {
     },
   ];
 
+  const handleResetCanvas = () => {
+    drawing?.clear();
+  };
+
   return (
     <>
       <div className='absolute top-5 left-3 max-w-full z-50'>
-          <Dropdownmenu />
+          <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
       <div className='absolute top-5 right-3 max-w-full z-50'>
           <div className="flex items-center justify-center gap-5">
