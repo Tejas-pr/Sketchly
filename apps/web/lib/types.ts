@@ -7,6 +7,10 @@ export type Shape = {
     y: number;
     width: number;
     height: number;
+    stroke?: string;
+    strokeWidth?: number;
+    roughness?: number;
+    fill?: number;
 } | {
     type: "circle";
     centerX: number;

@@ -1,4 +1,5 @@
 import { Shape, Tools } from "@/lib/types";
+import rough from 'roughjs';
 
 export class Draw {
 
@@ -10,9 +11,19 @@ export class Draw {
     private startY: number;
     private selectedTool: string | null;
     private selectedTheme: string | null | undefined;
+    // rough js
+    private rc: any;
+    private fillColor: string | null | undefined;
+    private rough: number;
+    private stroke: string;
+    private strokeWidth: number;
+    private fill: string;
+    private roughness: number;
+    private bowing: number;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
+        this.rc = rough.canvas(canvas);
         // Set canvas size to match window
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -28,6 +39,16 @@ export class Draw {
         this.existingShapes = [];
         this.selectedTool = "";
         this.selectedTheme = "dark";
+
+        // rough js
+        this.fillColor = "";
+        this.stroke = ""
+        this.rough = 0
+        this.strokeWidth = 0
+        this.fill = ""
+        this.roughness = 0
+        this.bowing = 0
+
         
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -45,7 +66,6 @@ export class Draw {
     }
 
     setTool(tool: Tools | null) {
-        console.log("?>>>>>>>>>>>>", tool);
         this.selectedTool = tool;
     }
 
@@ -65,6 +85,14 @@ export class Draw {
         this.ctx.strokeStyle = theme === "dark" ? "#ffffff" : "#000000";
     }
 
+    setFillColor(color: string | null | undefined) {
+        this.fillColor = color;
+    }
+
+    setEditorValue() {
+        
+    }
+
     mouseDown = (e: MouseEvent) => {
         this.clicked = true;
         this.startX = e.offsetX;
@@ -80,15 +108,15 @@ export class Draw {
             const selectedTool = this.selectedTool;
 
             if (selectedTool === "rectangle") {
-                this.ctx.strokeRect(this.startX, this.startY, width, height);   
+                // this.ctx.strokeRect(this.startX, this.startY, width, height);   
+                this.rc.rectangle(this.startX, this.startY, width, height, {
+                    rough: 1.5 , stroke: 'white', strokeWidth: 1, fill: "#ff0a1b", roughness: 2.8, bowing: 6,
+                });
             } else if (selectedTool === "circle") {
                 const radius = Math.max(width, height) / 2;
                 const centerX = this.startX + radius;
-                const centerY = this.startY + radius;
-                this.ctx.beginPath();
-                this.ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
-                this.ctx.stroke();
-                this.ctx.closePath();                
+                const centerY = this.startY + radius;              
+                this.rc.ellipse(centerX, centerY, width, height);
             } else if (selectedShape === 'triangle') {
                 return;
             } else if (selectedShape === 'diamond') {
@@ -97,7 +125,7 @@ export class Draw {
                 return;
             } else if (selectedShape === 'line') {
                 return;
-            } else if (selectedShape === 'pencil') {
+            } else if (selectedShape === 'pencil') {    
                 return;
             }
         }
@@ -117,7 +145,7 @@ export class Draw {
                 x: this.startX,
                 y: this.startY,
                 width,
-                height
+                height,
             }
         } else if (selectedShape === 'circle') {
             const radius = Math.sqrt(width * width + height * height) / 2;

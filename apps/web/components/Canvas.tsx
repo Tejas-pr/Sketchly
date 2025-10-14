@@ -29,12 +29,8 @@ import { useLoader } from "@/providers/loader-provider";
 import { Draw } from "@/app/drawingJS/Draw";
 import { useTheme } from "next-themes";
 import { ShapeOption, Tools } from "@/lib/types";
-import { Button } from "@workspace/ui/components/button";
-import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-} from "@workspace/ui/components/button-group";
+import Zoom from "./zoom";
+import DrawingEditors from "./drawing-editor";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -43,16 +39,17 @@ export default function Canvas({ roomId }: CanvasProps) {
   const { socket, isConnected, error } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
+  const [fillColor, setFillColor] = useState<string | null>();
   const activeTheme = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
     drawing?.setTool(selectedShape);
     drawing?.setTheme(activeTheme);
+    drawing?.setFillColor(fillColor);
   }, [selectedShape, drawing, activeTheme]);
 
   useEffect(() => {
     if (myRef.current) {
-      // initDraw(myRef.current, roomId, selectedShape);
       const g = new Draw(myRef.current);
       setDrawing(g);
       g.initMouseHandler();
@@ -212,30 +209,19 @@ export default function Canvas({ roomId }: CanvasProps) {
       <div className='absolute top-5 left-3 max-w-full z-50'>
           <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
-      <div className='absolute top-5 right-3 max-w-full z-50'>
+      <div className='fixed top-5 right-3 max-w-full z-50'>
           <div className="flex items-center justify-center gap-5">
             <ProfileMenu />
             <ModeToggle />
           </div>
       </div>
-      <div className='absolute bottom-5 left-3 max-w-full z-50'>
-          <div className="flex items-center justify-center gap-5">
-            <ButtonGroup>
-              <Button size="icon" variant="secondary">
-                +
-              </Button>
-              <ButtonGroupSeparator />
-              <Button variant="secondary">
-                100 %
-              </Button>
-              <ButtonGroupSeparator />
-              <Button size="icon" variant="secondary">
-                -
-              </Button>
-            </ButtonGroup>
-          </div>
+      <div className="fixed left-3 top-1/2 -translate-y-1/2 h-[500px] flex items-center z-40">
+        <DrawingEditors />
       </div>
-      <div className='absolute bottom-5 left-1/2 max-w-full -translate-x-1/2 z-50'>
+      <div className="fixed bottom-5 left-3 max-w-full z-40">
+        <Zoom />
+      </div>
+      <div className='fixed bottom-5 left-1/2 -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
           {shapes.map((item, idx) => (
             <div key={idx} onClick={() => setSelectedShape(item.id)}>
@@ -253,7 +239,7 @@ export default function Canvas({ roomId }: CanvasProps) {
       {/* Canvas */}
       <canvas
         ref={myRef}
-        className="fixed top-0 left-0 w-full h-full"
+        className="fixed top-0 left-0 w-full h-full z-0"
       ></canvas>
     </>
   );

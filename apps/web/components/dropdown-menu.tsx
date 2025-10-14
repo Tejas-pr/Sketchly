@@ -114,7 +114,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
 
       {/* Popup Overlay + Card */}
       {popupType && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[1000]">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <Card
             className="relative w-[400px] bg-white dark:bg-[#1c1c1f] 
                        border border-gray-300 dark:border-gray-700 
