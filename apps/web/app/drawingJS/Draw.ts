@@ -14,10 +14,12 @@ export class Draw {
   private tool: Tools | null = null;
   private theme: string | undefined = "dark";
 
-  private stroke = "";
+  private stroke = "#000000";
   private strokeWidth = 1;
-  private fillStyle = "dots";
-  private fillColor: string | undefined;
+  private fillStyle = "solid";
+  private fillColor: string | undefined = "";
+
+  private currentPencilPoints: [number, number][] = [];
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -43,7 +45,6 @@ export class Draw {
   }
 
   // --- Public API ---
-
   initMouseHandler() {
     this.canvas.addEventListener("mousedown", this.handleMouseDown);
     this.canvas.addEventListener("mousemove", this.handleMouseMove);
@@ -75,6 +76,7 @@ export class Draw {
   setTheme(theme: string | undefined) {
     this.theme = theme;
     this.renderBackground();
+    this.redrawShapes();
   }
 
   clear() {
@@ -83,7 +85,6 @@ export class Draw {
   }
 
   // --- Private Methods ---
-
   private renderBackground() {
     this.ctx.fillStyle = this.theme === "dark" ? "#121212" : "#ffffff";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -91,28 +92,112 @@ export class Draw {
 
   private redrawShapes() {
     this.renderBackground();
-    this.shapes.forEach((shape) => {
-      if (shape.type === "rectangle") {
+    for (let shape of this.shapes) {
+      this.drawShape(shape);
+    }
+  }
 
-        this.rc.rectangle(shape.x, shape.y, shape.width, shape.height, {
-          stroke: this.stroke,
-          strokeWidth: this.strokeWidth,
-          fill: this.fillColor,
-          fillStyle: this.fillStyle,
-        });
-      } else if (shape.type === "circle") {
-        // this.rc.ellipse(shape.centerX, shape.centerY, shape.width, shape.height, {
-        //   stroke: this.stroke,
-        //   strokeWidth: this.strokeWidth,
-        //   fill: this.fillColor || this.stroke,
-        //   fillStyle: this.fillStyle,
-        // });
+  private drawShape(shape: Shape) {
+    let options = {
+      stroke: shape.stroke,
+      strokeWidth: shape.strokeWidth,
+      fill: shape.fill,
+      fillStyle: shape.fillStyle,
+    };
+
+    if (shape.type === "rectangle") {
+      this.rc.rectangle(shape.x, shape.y, shape.width, shape.height, options);
+    } else if (shape.type === "circle") {
+      this.rc.ellipse(shape.centerX, shape.centerY, shape.width, shape.height, options);
+    } else if (shape.type === "line") {
+      this.rc.line(shape.x1, shape.y1, shape.x2, shape.y2, options);
+    } else if (shape.type === "triangle") {
+      this.rc.polygon(shape.points, options);
+    } else if (shape.type === "arrow") {
+      this.drawArrow(shape, options);
+    } else if (shape.type === "pencil") {
+      for (let i = 1; i < shape.points.length; i++) {
+        const [x1, y1] = shape.points[i - 1]!;
+        const [x2, y2] = shape.points[i]!;
+        this.rc.line(x1, y1, x2, y2, options);
       }
-    });
+    }
+  }
+
+  private createShape(startX: number, startY: number, endX: number, endY: number): Shape | null {
+    const width = endX - startX;
+    const height = endY - startY;
+
+    if (this.tool === "rectangle") {
+      return {
+        type: "rectangle",
+        x: startX,
+        y: startY,
+        width,
+        height,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        fill: this.fillColor,
+        fillStyle: this.fillStyle,
+      };
+    } else if (this.tool === "circle") {
+      return {
+        type: "circle",
+        centerX: startX + width / 2,
+        centerY: startY + height / 2,
+        width,
+        height,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        fill: this.fillColor,
+        fillStyle: this.fillStyle,
+      };
+    } else if (this.tool === "line") {
+      return {
+        type: "line",
+        x1: startX,
+        y1: startY,
+        x2: endX,
+        y2: endY,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+      };
+    } else if (this.tool === "triangle") {
+      const topX = (startX - endX) / 2;
+      const topY = startY;
+      const leftX = startX;
+      const leftY = endY;
+      const rightX = endX;
+      const rightY = endY;
+
+      return {
+        type: "triangle",
+        points: [
+          [topX, topY],
+          [leftX, leftY],
+          [rightX, rightY]
+        ],
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        fill: this.fillColor,
+        fillStyle: this.fillStyle,
+      }
+    } else if (this.tool === "arrow") {
+      return {
+        type: "arrow",
+        x1: startX,
+        y1: startY,
+        x2: endX,
+        y2: endY,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        headLength: 10,
+      };
+    }
+    return null;
   }
 
   // --- Mouse Handlers ---
-
   private handleMouseDown = (e: MouseEvent) => {
     this.isDrawing = true;
     this.startX = e.offsetX;
@@ -122,54 +207,61 @@ export class Draw {
   private handleMouseMove = (e: MouseEvent) => {
     if (!this.isDrawing) return;
 
-    this.redrawShapes();
-
-    const width = e.offsetX - this.startX;
-    const height = e.offsetY - this.startY;
-
-    if (this.tool === "rectangle") {
-      this.rc.rectangle(this.startX, this.startY, width, height, {
+    if (this.tool === "pencil") {
+      this.currentPencilPoints.push([e.offsetX, e.offsetY]);
+      this.redrawShapes();
+      this.drawShape({
+        type: "pencil",
+        points: this.currentPencilPoints,
         stroke: this.stroke,
         strokeWidth: this.strokeWidth,
-        fillStyle: this.fillStyle,
-        fill: this.fillColor
       });
-    } else if (this.tool === "circle") {
-      const radius = Math.max(width, height) / 2;
-      const cx = this.startX + radius;
-      const cy = this.startY + radius;
-      this.rc.ellipse(cx, cy, width, height, {
-        stroke: this.stroke,
-        strokeWidth: this.strokeWidth,
-        fill: this.fillColor || this.stroke,
-        fillStyle: this.fillStyle
-      });
+    }
+    else {
+      const shape = this.createShape(this.startX, this.startY, e.offsetX, e.offsetY);
+      this.redrawShapes();
+      if (shape) this.drawShape(shape);
     }
   };
 
   private handleMouseUp = (e: MouseEvent) => {
     this.isDrawing = false;
-    const width = e.offsetX - this.startX;
-    const height = e.offsetY - this.startY;
 
-    if (this.tool === "rectangle") {
+    if (this.tool === "pencil") {
       this.shapes.push({
-        type: "rectangle",
-        x: this.startX,
-        y: this.startY,
-        width,
-        height,
+        type: "pencil",
+        points: this.currentPencilPoints,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
       });
-    } else if (this.tool === "circle") {
-      const radius = Math.sqrt(width * width + height * height) / 2;
-      const cx = this.startX + width / 2;
-      const cy = this.startY + height / 2;
-      this.shapes.push({
-        type: "circle",
-        centerX: cx,
-        centerY: cy,
-        radius
-      });
+      this.currentPencilPoints = [];
+    } else {
+      const shape = this.createShape(this.startX, this.startY, e.offsetX, e.offsetY);
+      if (shape) this.shapes.push(shape);
     }
+
+    this.redrawShapes();
   };
+
+
+  private drawArrow(shape: Extract<Shape, { type: "arrow" }>, options: any) {
+    const { x1, y1, x2, y2, headLength = 10 } = shape;
+
+    // Draw main line
+    this.rc.line(x1, y1, x2, y2, options);
+
+    // Calculate angle
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+
+    // Arrowhead points
+    const arrowPoint1X = x2 - headLength * Math.cos(angle - Math.PI / 6);
+    const arrowPoint1Y = y2 - headLength * Math.sin(angle - Math.PI / 6);
+
+    const arrowPoint2X = x2 - headLength * Math.cos(angle + Math.PI / 6);
+    const arrowPoint2Y = y2 - headLength * Math.sin(angle + Math.PI / 6);
+
+    // Draw arrowhead
+    this.rc.line(x2, y2, arrowPoint1X, arrowPoint1Y, options);
+    this.rc.line(x2, y2, arrowPoint2X, arrowPoint2Y, options);
+  }
 }

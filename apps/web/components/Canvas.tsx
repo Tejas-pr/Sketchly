@@ -34,7 +34,7 @@ import DrawingEditors from "./drawing-editor";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
-  const [selectedShape, setSelectedShape] = useState<Tools>("rectangle");
+  const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
   const { loading } = useLoader();
   const { socket, isConnected, error } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();

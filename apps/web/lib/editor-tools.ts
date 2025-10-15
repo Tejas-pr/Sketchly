@@ -1,19 +1,20 @@
 
 export const strokeColors = [
-    { name: "White", value: "#FFFFFF" },
-    { name: "Red", value: "#F87171" },
-    { name: "Blue", value: "#60A5FA" },
-    { name: "Green", value: "#34D399" },
-    { name: "Yellow", value: "#FBBF24" },
-    { name: "Gray", value: "#E5E7EB" },
+    { name: "Black", value: "#000000" },     // Base color
+    { name: "White", value: "#FFFFFF" },     // Base color
+    { name: "Red", value: "#EF4444" },       // Strong, visible on both themes
+    { name: "Blue", value: "#3B82F6" },      // Bright blue
+    { name: "Green", value: "#10B981" },     // Mid-bright green
+    { name: "Yellow", value: "#FACC15" },    // Visible on dark backgrounds
 ];
 
 export const backgroundColors = [
-    { name: "Brown", value: "#78350F" },
-    { name: "Dark Green", value: "#14532D" },
-    { name: "Navy Blue", value: "#1E3A8A" },
-    { name: "Orange Brown", value: "#78350F" },
-    { name: "Transparent", value: "transparent" },
+    { name: "White", value: "#FFFFFF" },         // Base color
+    { name: "Black", value: "#000000" },         // Base color
+    { name: "Slate Blue", value: "#1E40AF" },    // Deep blue with good contrast
+    { name: "Forest Green", value: "#064E3B" },  // Rich dark green
+    { name: "Charcoal Gray", value: "#374151" }, // Neutral dark, good contrast
+    { name: "Transparent", value: "transparent" } // Special case
 ];
 
 export const fillStyles = ["hachure", "solid", "zigzag", "cross-hatch", "dots", "sunburst", "dashed", "zigzag-line"];
