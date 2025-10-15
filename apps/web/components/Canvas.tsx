@@ -34,19 +34,17 @@ import DrawingEditors from "./drawing-editor";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
-  const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
+  const [selectedShape, setSelectedShape] = useState<Tools>("rectangle");
   const { loading } = useLoader();
   const { socket, isConnected, error } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
-  const [fillColor, setFillColor] = useState<string | null>();
   const activeTheme = theme === "system" ? systemTheme : theme;
-
-  useEffect(() => {
-    drawing?.setTool(selectedShape);
-    drawing?.setTheme(activeTheme);
-    drawing?.setFillColor(fillColor);
-  }, [selectedShape, drawing, activeTheme]);
+  // Editors
+  const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
+  const [strokeWidth, setStrokeWidth] = useState<number>(1);
+  const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
+  const [backgroundColor, setBackgroundColor] = useState<string>("");
 
   useEffect(() => {
     if (myRef.current) {
@@ -58,6 +56,19 @@ export default function Canvas({ roomId }: CanvasProps) {
       }
     }
   }, [roomId]);
+
+  useEffect(() => {
+    if (drawing) {
+      drawing?.setTool(selectedShape);
+      drawing?.setTheme(activeTheme);
+      drawing.setEditorValues({
+        strokeColor,
+        strokeWidth,
+        selectedFillStyle,
+        backgroundColor
+      });
+    }
+  }, [selectedShape, drawing, activeTheme, strokeColor, strokeWidth, selectedFillStyle, backgroundColor]);
 
   if (roomId && loading) {
     return (
@@ -216,7 +227,16 @@ export default function Canvas({ roomId }: CanvasProps) {
           </div>
       </div>
       <div className="fixed left-3 top-1/2 -translate-y-1/2 h-[500px] flex items-center z-40">
-        <DrawingEditors />
+        <DrawingEditors
+          strokeColor={strokeColor}
+          setStrokeColor={setStrokeColor}
+          strokeWidth={strokeWidth}
+          setStrokeWidth={setStrokeWidth}
+          selectedFillStyle={selectedFillStyle}
+          setSelectedFillStyle={setSelectedFillStyle}
+          backgroundColor={backgroundColor}
+          setBackgroundColor={setBackgroundColor}
+        />
       </div>
       <div className="fixed bottom-5 left-3 max-w-full z-40">
         <Zoom />

@@ -9,8 +9,8 @@ export type Shape = {
     height: number;
     stroke?: string;
     strokeWidth?: number;
-    roughness?: number;
-    fill?: number;
+    fill?: string;
+    fillStyle?: string;
 } | {
     type: "circle";
     centerX: number;
