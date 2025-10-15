@@ -29,8 +29,9 @@ import { LoginForm } from "./login-form";
 import { SignupForm } from "./signup-form";
 import { LiveCollaboration } from "./live-collaboration";
 import { toast } from "@workspace/ui/components/sonner";
+import { DropdownmenuProps } from "@/lib/interfaces";
 
-export function Dropdownmenu() {
+export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
   const router = useRouter();
   const [popupType, setPopupType] = useState<
     "login" | "signup" | "live-collaboration" | null
@@ -73,7 +74,9 @@ export function Dropdownmenu() {
               Live collaboration
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="hover:bg-gray-100 dark:hover:bg-gray-800">
+            <DropdownMenuItem onClick={() => {
+              onResetCanvas();
+            }} className="hover:bg-gray-100 dark:hover:bg-gray-800">
               <Trash className="text-gray-700 dark:text-gray-300" />
               Reset the canvas
             </DropdownMenuItem>
@@ -111,7 +114,7 @@ export function Dropdownmenu() {
 
       {/* Popup Overlay + Card */}
       {popupType && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[1000]">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <Card
             className="relative w-[400px] bg-white dark:bg-[#1c1c1f] 
                        border border-gray-300 dark:border-gray-700 

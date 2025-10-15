@@ -1,5 +1,4 @@
 "use client";
-import { initDraw } from "@/app/drawingJS";
 import { useSocket } from "@/hooks/useSocker";
 import { useEffect, useRef, useState } from "react";
 import { CanvasProps } from "@/lib/interfaces";
@@ -17,23 +16,59 @@ import {
   Diamond,
   ArrowRight,
   Minus,
+  Pencil,
+  MousePointer2,
+  Eraser,
+  TypeOutline,
+  Plus,
 } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
 import { ProfileMenu } from "./profile-menu";
 import { useLoader } from "@/providers/loader-provider";
+import { Draw } from "@/app/drawingJS/Draw";
+import { useTheme } from "next-themes";
+import { ShapeOption, Tools } from "@/lib/types";
+import Zoom from "./zoom";
+import DrawingEditors from "./drawing-editor";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
-  const [selectedShape, setSelectedShape] = useState<string | null>(null);
+  const [selectedShape, setSelectedShape] = useState<Tools>("rectangle");
   const { loading } = useLoader();
   const { socket, isConnected, error } = useSocket(roomId);
+  const [drawing, setDrawing] = useState<Draw>();
+  const { theme, systemTheme } = useTheme();
+  const activeTheme = theme === "system" ? systemTheme : theme;
+  // Editors
+  const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
+  const [strokeWidth, setStrokeWidth] = useState<number>(1);
+  const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
+  const [backgroundColor, setBackgroundColor] = useState<string>("");
 
   useEffect(() => {
     if (myRef.current) {
-      initDraw(myRef.current, roomId);
+      const g = new Draw(myRef.current);
+      setDrawing(g);
+      g.initMouseHandler();
+      return () => {
+          g.destroy();
+      }
     }
   }, [roomId]);
+
+  useEffect(() => {
+    if (drawing) {
+      drawing?.setTool(selectedShape);
+      drawing?.setTheme(activeTheme);
+      drawing.setEditorValues({
+        strokeColor,
+        strokeWidth,
+        selectedFillStyle,
+        backgroundColor
+      });
+    }
+  }, [selectedShape, drawing, activeTheme, strokeColor, strokeWidth, selectedFillStyle, backgroundColor]);
 
   if (roomId && loading) {
     return (
@@ -43,7 +78,7 @@ export default function Canvas({ roomId }: CanvasProps) {
     );
   }
 
-  const shapes = [
+  const shapes: ShapeOption[] = [
     {
       title: "Rectangle",
       icon: (
@@ -122,20 +157,91 @@ export default function Canvas({ roomId }: CanvasProps) {
       ),
       id: "line",
     },
+    {
+      title: "Pencil",
+      icon: (
+        <Pencil
+          className={`h-full w-full ${
+            selectedShape === "pencil"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "pencil",
+    },
+    {
+      title: "Mouse Pointer",
+      icon: (
+        <MousePointer2
+          className={`h-full w-full ${
+            selectedShape === "mousepointer"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "mousepointer",
+    },
+    {
+      title: "Text",
+      icon: (
+        <TypeOutline
+          className={`h-full w-full ${
+            selectedShape === "text"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "text",
+    },
+    {
+      title: "Eraser",
+      icon: (
+        <Eraser
+          className={`h-full w-full ${
+            selectedShape === "eraser"
+              ? "text-orange-500"
+              : "text-neutral-600 dark:text-neutral-300"
+          }`}
+        />
+      ),
+      id: "eraser",
+    },
   ];
+
+  const handleResetCanvas = () => {
+    drawing?.clear();
+  };
 
   return (
     <>
       <div className='absolute top-5 left-3 max-w-full z-50'>
-          <Dropdownmenu />
+          <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
-      <div className='absolute top-5 right-3 max-w-full z-50'>
+      <div className='fixed top-5 right-3 max-w-full z-50'>
           <div className="flex items-center justify-center gap-5">
             <ProfileMenu />
             <ModeToggle />
           </div>
       </div>
-      <div className='absolute bottom-5 left-1/2 max-w-full -translate-x-1/2 z-50'>
+      <div className="fixed left-3 top-1/2 -translate-y-1/2 h-[500px] flex items-center z-40">
+        <DrawingEditors
+          strokeColor={strokeColor}
+          setStrokeColor={setStrokeColor}
+          strokeWidth={strokeWidth}
+          setStrokeWidth={setStrokeWidth}
+          selectedFillStyle={selectedFillStyle}
+          setSelectedFillStyle={setSelectedFillStyle}
+          backgroundColor={backgroundColor}
+          setBackgroundColor={setBackgroundColor}
+        />
+      </div>
+      <div className="fixed bottom-5 left-3 max-w-full z-40">
+        <Zoom />
+      </div>
+      <div className='fixed bottom-5 left-1/2 -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
           {shapes.map((item, idx) => (
             <div key={idx} onClick={() => setSelectedShape(item.id)}>
@@ -153,7 +259,7 @@ export default function Canvas({ roomId }: CanvasProps) {
       {/* Canvas */}
       <canvas
         ref={myRef}
-        className="fixed top-0 left-0 w-full h-full"
+        className="fixed top-0 left-0 w-full h-full z-0"
       ></canvas>
     </>
   );

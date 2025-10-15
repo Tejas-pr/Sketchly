@@ -1,11 +1,16 @@
+import { JSX } from "react";
 
 // canvas
 export type Shape = {
-    type: "rect";
+    type: "rectangle";
     x: number;
     y: number;
     width: number;
     height: number;
+    stroke?: string;
+    strokeWidth?: number;
+    fill?: string;
+    fillStyle?: string;
 } | {
     type: "circle";
     centerX: number;
@@ -41,3 +46,11 @@ export type SessionData = {
     user: User;
     session: Session;
 } | null;
+
+export type Tools = "rectangle" | "circle" | "triangle" | "diamond" | "arrow" | "line" | "pencil" | "mousepointer" | "text" | "eraser" | null;
+
+export type ShapeOption = {
+  title: string;
+  icon: JSX.Element;
+  id: Tools;
+};

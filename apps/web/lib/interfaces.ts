@@ -22,3 +22,7 @@ export interface UseSocketResult {
 export interface LoginFormProps extends React.ComponentProps<"div"> {
   onSuccess?: () => void;
 }
+
+export interface DropdownmenuProps {
+  onResetCanvas: () => void
+}
