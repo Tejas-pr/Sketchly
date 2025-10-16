@@ -16,19 +16,20 @@ function setCorsHeaders(origin: string | null, res: Response) {
 }
 
 export async function OPTIONS(req: Request) {
-  const origin = req.headers.get("origin");
   const res = new Response(null, { status: 200 });
+  const origin = req.headers.get("origin");
   return setCorsHeaders(origin, res);
 }
 
 export async function GET(req: Request) {
+  const res = await handlers.GET(req); // Better Auth reads the body if needed
   const origin = req.headers.get("origin");
-  const res = await handlers.GET(req);
   return setCorsHeaders(origin, res);
 }
 
 export async function POST(req: Request) {
+  // Do NOT read req.body here
+  const res = await handlers.POST(req); 
   const origin = req.headers.get("origin");
-  const res = await handlers.POST(req);
   return setCorsHeaders(origin, res);
 }
