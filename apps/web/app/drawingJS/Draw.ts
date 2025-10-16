@@ -21,6 +21,13 @@ export class Draw {
 
   private currentPencilPoints: [number, number][] = [];
 
+  // zoom
+  public scale = 1; // zoom level
+  private offsetX = 0; // panning offset
+  private offsetY = 0;
+  private isPanning = false;
+  private panStart: [number, number] = [0, 0];
+
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.rc = rough.canvas(canvas);
@@ -49,6 +56,31 @@ export class Draw {
     this.canvas.addEventListener("mousedown", this.handleMouseDown);
     this.canvas.addEventListener("mousemove", this.handleMouseMove);
     this.canvas.addEventListener("mouseup", this.handleMouseUp);
+    this.canvas.addEventListener("wheel", this.handleWheel, { passive: false });
+
+    // Right click drag for pan
+    this.canvas.addEventListener("mousedown", (e) => {
+      if (e.button === 2) { // right click
+        this.isPanning = true;
+        this.panStart = [e.clientX - this.offsetX, e.clientY - this.offsetY];
+        e.preventDefault();
+      }
+    });
+
+    this.canvas.addEventListener("mousemove", (e) => {
+      if (this.isPanning) {
+        this.offsetX = e.clientX - this.panStart[0];
+        this.offsetY = e.clientY - this.panStart[1];
+        this.redrawShapes();
+      }
+    });
+
+    this.canvas.addEventListener("mouseup", (e) => {
+      if (this.isPanning) this.isPanning = false;
+    });
+
+    // Disable context menu to allow right-click pan
+    this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
   destroy() {
@@ -92,6 +124,7 @@ export class Draw {
 
   private redrawShapes() {
     this.renderBackground();
+    this.applyTransform();
     for (let shape of this.shapes) {
       this.drawShape(shape);
     }
@@ -458,4 +491,31 @@ export class Draw {
     this.rc.line(x2, y2, arrowPoint1X, arrowPoint1Y, options);
     this.rc.line(x2, y2, arrowPoint2X, arrowPoint2Y, options);
   }
+
+  private applyTransform() {
+    this.ctx.setTransform(this.scale, 0, 0, this.scale, this.offsetX, this.offsetY);
+  }
+  zoom(delta: number, centerX?: number, centerY?: number) {
+    const oldScale = this.scale;
+    this.scale = Math.min(Math.max(this.scale + delta, 0.2), 5); // limit zoom
+
+    // Zoom toward a specific point (mouse cursor)
+    if (centerX !== undefined && centerY !== undefined) {
+      this.offsetX = centerX - ((centerX - this.offsetX) / oldScale) * this.scale;
+      this.offsetY = centerY - ((centerY - this.offsetY) / oldScale) * this.scale;
+    }
+
+    this.redrawShapes();
+  }
+
+  private handleWheel = (e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.1 : -0.1;
+    this.zoom(delta, e.offsetX, e.offsetY);
+  };
+
+  private getRealCoords(x: number, y: number): [number, number] {
+    return [(x - this.offsetX) / this.scale, (y - this.offsetY) / this.scale];
+  }
+
 }

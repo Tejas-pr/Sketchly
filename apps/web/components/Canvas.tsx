@@ -239,7 +239,7 @@ export default function Canvas({ roomId }: CanvasProps) {
         />
       </div>
       <div className="fixed bottom-5 left-3 max-w-full z-40">
-        <Zoom />
+        <Zoom drawing={drawing} />
       </div>
       <div className='fixed bottom-5 left-1/2 -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
