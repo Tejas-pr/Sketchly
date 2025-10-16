@@ -1,8 +1,11 @@
+import { fileURLToPath } from "url";
+import path from "path";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@workspace/ui"],
   experimental: {
-    outputFileTracingRoot: __dirname,
+    outputFileTracingRoot: path.dirname(fileURLToPath(import.meta.url)),
   },
 };
 
