@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prebuild": "pnpm --filter @repo/db db:generate",
     "build": "tsc -b"
   },
   "keywords": [],
