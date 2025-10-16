@@ -27,6 +27,13 @@
     },
     "db:deploy": {
       "cache": false
+    },
+    "postinstall": {
+      "outputs": []
+    },
+    "generate": {
+      "dependsOn": [],
+      "outputs": ["packages/database/generated/prisma/**"]
     }
   },
   "globalEnv": [
