@@ -1,4 +1,5 @@
 import { auth } from "@repo/auth/server";
+import { prisma } from "@repo/db";
 import { toNextJsHandler } from "better-auth/next-js";
 
 const handlers = toNextJsHandler(auth);
