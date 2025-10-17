@@ -1,14 +1,10 @@
+// apps/web/next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   experimental: {
     esmExternals: 'loose',
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('@prisma/client');
-    }
-    return config;
-  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
