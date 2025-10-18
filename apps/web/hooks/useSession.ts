@@ -11,6 +11,7 @@ export function useSession() {
 
   useEffect(() => {
     async function fetchSession() {
+      setLoading(true);
       try {
         const result = await authClient.getSession();
         if ("data" in result) {
