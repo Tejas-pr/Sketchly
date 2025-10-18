@@ -33,39 +33,39 @@ export const auth = betterAuth({
 
   plugins: [
     nextCookies(),
-    {
-      id: "cors-plugin",
-      async onRequest(request, ctx) {
-        const origin = request.headers.get("origin");
-        const responseHeaders = new Headers();
+    // {
+    //   id: "cors-plugin",
+    //   async onRequest(request, ctx) {
+    //     const origin = request.headers.get("origin");
+    //     const responseHeaders = new Headers();
 
-        if (origin && allowedOrigins.includes(origin)) {
-          responseHeaders.set("Access-Control-Allow-Origin", origin);
-          responseHeaders.set("Vary", "Origin");
-          responseHeaders.set(
-            "Access-Control-Allow-Methods",
-            "GET,POST,OPTIONS"
-          );
-          responseHeaders.set(
-            "Access-Control-Allow-Headers",
-            "Content-Type, Authorization"
-          );
-          responseHeaders.set("Access-Control-Allow-Credentials", "true");
-        }
+    //     if (origin && allowedOrigins.includes(origin)) {
+    //       responseHeaders.set("Access-Control-Allow-Origin", origin);
+    //       responseHeaders.set("Vary", "Origin");
+    //       responseHeaders.set(
+    //         "Access-Control-Allow-Methods",
+    //         "GET,POST,OPTIONS"
+    //       );
+    //       responseHeaders.set(
+    //         "Access-Control-Allow-Headers",
+    //         "Content-Type, Authorization"
+    //       );
+    //       responseHeaders.set("Access-Control-Allow-Credentials", "true");
+    //     }
 
-        if (request.method === "OPTIONS") {
-          return {
-            response: new Response(null, {
-              status: 204,
-              headers: responseHeaders,
-            }),
-          };
-        }
+    //     if (request.method === "OPTIONS") {
+    //       return {
+    //         response: new Response(null, {
+    //           status: 204,
+    //           headers: responseHeaders,
+    //         }),
+    //       };
+    //     }
 
-        return {
-          request: new Request(request, { headers: request.headers }),
-        };
-      },
-    },
+    //     return {
+    //       request: new Request(request, { headers: request.headers }),
+    //     };
+    //   },
+    // },
   ],
 });
