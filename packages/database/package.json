@@ -7,7 +7,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "postinstall": "npx prisma generate",
-    "generate": "npx prisma generate --schema=./packages/database/prisma/schema.prisma"
+    "generate": "npx prisma generate"
   },
   "devDependencies": {
     "@types/node": "^20.19.9",
