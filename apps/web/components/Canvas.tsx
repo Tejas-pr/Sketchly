@@ -166,7 +166,7 @@ export default function Canvas({ roomId }: CanvasProps) {
 
       <canvas
         ref={myRef}
-        className="fixed top-0 left-0 w-full h-full z-0"
+        className={`fixed top-0 left-0 w-full h-full z-0 ${selectedShape !== "mousepointer" ? "cursor-crosshair" : ""}`}
       ></canvas>
     </>
   );
