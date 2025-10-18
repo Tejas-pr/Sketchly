@@ -1,10 +1,7 @@
 {
   "functions": {
     "api/**/*.js": {
-      "includeFiles": [
-        "packages/database/node_modules/.prisma/client/**/*",
-        "packages/database/generated/prisma/**/*"
-      ]
+      "includeFiles": "packages/database/node_modules/.prisma/client/**/*,packages/database/generated/prisma/**/*"
     }
   }
 }
