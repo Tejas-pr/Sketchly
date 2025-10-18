@@ -20,7 +20,6 @@ import {
   MousePointer2,
   Eraser,
   TypeOutline,
-  Plus,
 } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
@@ -31,6 +30,8 @@ import { useTheme } from "next-themes";
 import { ShapeOption, Tools } from "@/lib/types";
 import Zoom from "./zoom";
 import DrawingEditors from "./drawing-editor";
+import { SocialMedia } from "./social-media";
+import { TotalUsers } from "./total-users";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -221,9 +222,10 @@ export default function Canvas({ roomId }: CanvasProps) {
           <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
       <div className='fixed top-5 right-3 max-w-full z-50'>
-          <div className="flex items-center justify-center gap-5">
+          <div className="flex items-center justify-center gap-2">
             <ProfileMenu />
             <ModeToggle />
+            <SocialMedia />
           </div>
       </div>
       <div className="fixed left-3 top-1/2 -translate-y-1/2 h-[500px] flex items-center z-40">
@@ -240,6 +242,9 @@ export default function Canvas({ roomId }: CanvasProps) {
       </div>
       <div className="fixed bottom-5 left-3 max-w-full z-40">
         <Zoom drawing={drawing} />
+      </div>
+      <div className="fixed bottom-5 right-3 max-w-full z-40">
+          <TotalUsers />
       </div>
       <div className='fixed bottom-5 left-1/2 -translate-x-1/2 z-50'>
         <Dock className='items-end pb-3'>
