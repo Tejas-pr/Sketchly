@@ -9,7 +9,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
-    "build": "prisma migrate deploy --schema=../packages/database/prisma/schema.prisma && next build"
+    "build": "prisma migrate deploy --schema=../../packages/database/prisma/schema.prisma && next build"
   },
   "dependencies": {
     "@prisma/nextjs-monorepo-workaround-plugin": "^6.17.1",
