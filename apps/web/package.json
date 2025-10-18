@@ -9,8 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "if [ -f prisma/schema.prisma ]; then npx prisma generate; else echo 'No schema.prisma found — skipping Prisma generate'; fi"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/auth": "workspace:*",
