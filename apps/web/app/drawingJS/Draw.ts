@@ -1,3 +1,5 @@
+"use client";
+
 import { Shape, Tools } from "@/lib/types";
 import rough from "roughjs";
 
