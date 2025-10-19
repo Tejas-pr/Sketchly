@@ -34,6 +34,7 @@ import DrawingEditors from "./drawing-editor";
 import { SocialMedia } from "./social-media";
 import { TotalUsers } from "./total-users";
 import { AI } from "./ai";
+import { getShapes, setShapes } from "@/lib/localStorage/localStorage";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -60,6 +61,11 @@ export default function Canvas({ roomId }: CanvasProps) {
       const g = new Draw(myRef.current);
       setDrawing(g);
       g.initMouseHandler();
+
+      const saved = getShapes();
+      if (saved) {
+        saved.forEach((shape) => g.addShape(shape));
+      }
       return () => g.destroy();
     }
   }, [roomId, mounted]);
@@ -208,6 +214,8 @@ export default function Canvas({ roomId }: CanvasProps) {
           onShapeCreated={(newshape) => {
             if (drawing) {
               drawing.addShape(newshape);
+              const currentShapes = drawing.getAllShapes();
+              setShapes(currentShapes);
             }
           }}
         />
