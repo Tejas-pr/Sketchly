@@ -147,3 +147,5 @@ export type SessionData = {
 export type AIProps = {
   onShapeCreated: (shape: Shape) => void;
 };
+
+export type PopupType = "login" | "signup" | "live-collaboration" | null;

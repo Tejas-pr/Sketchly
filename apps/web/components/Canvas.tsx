@@ -51,9 +51,6 @@ export default function Canvas({ roomId }: CanvasProps) {
   const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
   const [backgroundColor, setBackgroundColor] = useState<string>("");
 
-  // AI
-  const [aiShapes, setAiShapes] = useState<Shape[]>([]);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -209,7 +206,6 @@ export default function Canvas({ roomId }: CanvasProps) {
       <div className="fixed top-5 right-20 -translate-x-1/2 z-40 w-full max-w-md flex justify-center">
         <AI
           onShapeCreated={(newshape) => {
-            setAiShapes((prev) => [...prev, newshape]);
             if (drawing) {
               drawing.addShape(newshape);
             }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import { LoaderProvider } from "@/providers/loader-provider";
 import { Toaster } from "@workspace/ui/components/sonner";
+import { PopupProvider } from "@/providers/popup-provider";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -20,7 +21,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <LoaderProvider>
-        {children}
+        <PopupProvider>{children}</PopupProvider>
         <Toaster />
       </LoaderProvider>
     </ThemeProvider>

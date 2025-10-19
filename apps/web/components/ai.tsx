@@ -8,10 +8,13 @@ import { toast } from "@workspace/ui/components/sonner";
 import { Bot, SendHorizontal, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 import { JSX, useState } from "react";
+import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
+import { usePopup } from "@/providers/popup-provider";
 
 export function AI({ onShapeCreated }: AIProps): JSX.Element {
   const [message, setMessage] = useState<string>("");
   const [submit, setSubmit] = useState<boolean>(false);
+  const { openPopup } = usePopup();
   const { session, user } = useSession();
   const { theme } = useTheme();
   
@@ -19,6 +22,7 @@ export function AI({ onShapeCreated }: AIProps): JSX.Element {
     setSubmit(true);
 
     if (!session || !user) {
+      openPopup("login")
       setSubmit(false);
       toast("Please log in to use this feature");
       return;
@@ -92,7 +96,7 @@ export function AI({ onShapeCreated }: AIProps): JSX.Element {
               className="absolute right-1 h-8 w-8 text-muted-foreground hover:text-foreground z-10"
               onClick={() => getAiShapes(message)}
             >
-              {submit ? <Square className="w-4 h-4" /> : <SendHorizontal className="w-4 h-4" />}
+              {submit ? <Spinner className="w-4 h-4" /> : <SendHorizontal className="w-4 h-4" />}
             </Button>
           </div>
         </div>
