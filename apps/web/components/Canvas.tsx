@@ -3,7 +3,6 @@
 import { useSocket } from "@/hooks/useSocker";
 import { useEffect, useRef, useState } from "react";
 import { CanvasProps } from "@/lib/interfaces";
-import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
 import {
   Dock,
   DockIcon,
@@ -25,7 +24,6 @@ import {
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
 import { ProfileMenu } from "./profile-menu";
-import { useLoader } from "@/providers/loader-provider";
 import { Draw } from "@/app/drawingJS/Draw";
 import { useTheme } from "next-themes";
 import { ShapeOption, Tools } from "@/lib/types";
@@ -40,11 +38,9 @@ export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
   const [mounted, setMounted] = useState(false);
   const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
-  const { loading } = useLoader();
   const { socket } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
-  const [activeTheme, setActiveTheme] = useState<string>("dark");
 
   // Editors
   const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
@@ -82,7 +78,6 @@ export default function Canvas({ roomId }: CanvasProps) {
 
     const themeToUse = theme === "system" ? systemTheme : theme;
     if (themeToUse) {
-      setActiveTheme(themeToUse);
       drawing.setTheme(themeToUse);
     }
   }, [
@@ -96,14 +91,6 @@ export default function Canvas({ roomId }: CanvasProps) {
     selectedFillStyle,
     backgroundColor,
   ]);
-
-  if (!mounted || (roomId && loading)) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#121212] z-50">
-        <Spinner variant="bars" size={25} />
-      </div>
-    );
-  }
 
   const shapes: ShapeOption[] = [
     { title: "Rectangle", icon: <Square />, id: "rectangle" },
