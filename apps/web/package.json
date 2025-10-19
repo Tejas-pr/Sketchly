@@ -12,6 +12,9 @@
     "build": "prisma migrate deploy --schema=../../packages/database/prisma/schema.prisma && next build"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@langchain/core": "^1.0.1",
+    "@langchain/google-genai": "^1.0.0",
     "@prisma/nextjs-monorepo-workaround-plugin": "^6.17.1",
     "@repo/auth": "workspace:*",
     "@repo/db": "workspace:*",

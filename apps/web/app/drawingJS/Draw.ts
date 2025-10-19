@@ -520,4 +520,9 @@ export class Draw {
     return [(x - this.offsetX) / this.scale, (y - this.offsetY) / this.scale];
   }
 
+  // Add shape to the canvas and redraw
+  public addShape(shape: Shape) {
+    this.shapes.push(shape);
+    this.redrawShapes();
+  }
 }

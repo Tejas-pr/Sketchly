@@ -28,11 +28,12 @@ import { ProfileMenu } from "./profile-menu";
 import { useLoader } from "@/providers/loader-provider";
 import { Draw } from "@/app/drawingJS/Draw";
 import { useTheme } from "next-themes";
-import { ShapeOption, Tools } from "@/lib/types";
+import { Shape, ShapeOption, Tools } from "@/lib/types";
 import Zoom from "./zoom";
 import DrawingEditors from "./drawing-editor";
 import { SocialMedia } from "./social-media";
 import { TotalUsers } from "./total-users";
+import { AI } from "./ai";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -49,6 +50,9 @@ export default function Canvas({ roomId }: CanvasProps) {
   const [strokeWidth, setStrokeWidth] = useState<number>(1);
   const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
   const [backgroundColor, setBackgroundColor] = useState<string>("");
+
+  // AI
+  const [aiShapes, setAiShapes] = useState<Shape[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -100,16 +104,96 @@ export default function Canvas({ roomId }: CanvasProps) {
   }
 
   const shapes: ShapeOption[] = [
-    { title: "Rectangle", icon: <Square className={`h-full w-full ${selectedShape === "rectangle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "rectangle" },
-    { title: "Circle", icon: <Circle className={`h-full w-full ${selectedShape === "circle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "circle" },
-    { title: "Triangle", icon: <Triangle className={`h-full w-full ${selectedShape === "triangle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "triangle" },
-    { title: "Diamond", icon: <Diamond className={`h-full w-full ${selectedShape === "diamond" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "diamond" },
-    { title: "Arrow", icon: <ArrowRight className={`h-full w-full ${selectedShape === "arrow" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "arrow" },
-    { title: "Line", icon: <Minus className={`h-full w-full ${selectedShape === "line" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "line" },
-    { title: "Pencil", icon: <Pencil className={`h-full w-full ${selectedShape === "pencil" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "pencil" },
-    { title: "Mouse Pointer", icon: <MousePointer2 className={`h-full w-full ${selectedShape === "mousepointer" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "mousepointer" },
-    { title: "Text", icon: <TypeOutline className={`h-full w-full ${selectedShape === "text" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "text" },
-    { title: "Eraser", icon: <Eraser className={`h-full w-full ${selectedShape === "eraser" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`} />, id: "eraser" },
+    {
+      title: "Rectangle",
+      icon: (
+        <Square
+          className={`h-full w-full ${selectedShape === "rectangle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "rectangle",
+    },
+    {
+      title: "Circle",
+      icon: (
+        <Circle
+          className={`h-full w-full ${selectedShape === "circle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "circle",
+    },
+    {
+      title: "Triangle",
+      icon: (
+        <Triangle
+          className={`h-full w-full ${selectedShape === "triangle" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "triangle",
+    },
+    {
+      title: "Diamond",
+      icon: (
+        <Diamond
+          className={`h-full w-full ${selectedShape === "diamond" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "diamond",
+    },
+    {
+      title: "Arrow",
+      icon: (
+        <ArrowRight
+          className={`h-full w-full ${selectedShape === "arrow" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "arrow",
+    },
+    {
+      title: "Line",
+      icon: (
+        <Minus
+          className={`h-full w-full ${selectedShape === "line" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "line",
+    },
+    {
+      title: "Pencil",
+      icon: (
+        <Pencil
+          className={`h-full w-full ${selectedShape === "pencil" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "pencil",
+    },
+    {
+      title: "Mouse Pointer",
+      icon: (
+        <MousePointer2
+          className={`h-full w-full ${selectedShape === "mousepointer" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "mousepointer",
+    },
+    {
+      title: "Text",
+      icon: (
+        <TypeOutline
+          className={`h-full w-full ${selectedShape === "text" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "text",
+    },
+    {
+      title: "Eraser",
+      icon: (
+        <Eraser
+          className={`h-full w-full ${selectedShape === "eraser" ? "text-orange-500" : "text-neutral-600 dark:text-neutral-300"}`}
+        />
+      ),
+      id: "eraser",
+    },
   ];
 
   const handleResetCanvas = () => {
@@ -120,6 +204,17 @@ export default function Canvas({ roomId }: CanvasProps) {
     <>
       <div className="absolute top-5 left-3 max-w-full z-50">
         <Dropdownmenu onResetCanvas={handleResetCanvas} />
+      </div>
+
+      <div className="fixed top-5 right-20 -translate-x-1/2 z-40 w-full max-w-md flex justify-center">
+        <AI
+          onShapeCreated={(newshape) => {
+            setAiShapes((prev) => [...prev, newshape]);
+            if (drawing) {
+              drawing.addShape(newshape);
+            }
+          }}
+        />
       </div>
 
       <div className="fixed top-5 right-3 max-w-full z-50">

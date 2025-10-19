@@ -143,3 +143,7 @@ export type SessionData = {
   user: User;
   session: Session;
 } | null;
+
+export type AIProps = {
+  onShapeCreated: (shape: Shape) => void;
+};
