@@ -30,12 +30,11 @@ import { SignupForm } from "./signup-form";
 import { LiveCollaboration } from "./live-collaboration";
 import { toast } from "@workspace/ui/components/sonner";
 import { DropdownmenuProps } from "@/lib/interfaces";
+import { usePopup } from "@/providers/popup-provider";
 
 export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
   const router = useRouter();
-  const [popupType, setPopupType] = useState<
-    "login" | "signup" | "live-collaboration" | null
-  >(null);
+  const { popupType, openPopup, closePopup } = usePopup();
 
   const signout = async () => {
     await authClient.signOut();
@@ -44,7 +43,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
   };
 
   const handleClosePopup = () => {
-    setPopupType(null);
+    closePopup();
   }
 
   return (
@@ -69,7 +68,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
           </DropdownMenuLabel>
 
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => setPopupType("live-collaboration")}>
+            <DropdownMenuItem onClick={() => openPopup("live-collaboration")}>
               <Users />
               Live collaboration
             </DropdownMenuItem>
@@ -85,7 +84,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
           <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
 
           <DropdownMenuItem
-            onClick={() => setPopupType("login")}
+            onClick={() => openPopup("login")}
             className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <LogIn className="text-gray-700 dark:text-gray-300" />
@@ -93,7 +92,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={() => setPopupType("signup")}
+            onClick={() => openPopup("signup")}
             className="hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <UserRoundPlus className="text-gray-700 dark:text-gray-300" />
@@ -121,7 +120,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
                        text-gray-900 dark:text-white shadow-lg"
           >
             <X
-              onClick={() => setPopupType(null)}
+              onClick={() => closePopup()}
               className="absolute top-3 right-3 w-5 h-5 cursor-pointer 
                          text-gray-500 dark:text-gray-400 
                          hover:text-gray-900 dark:hover:text-white 

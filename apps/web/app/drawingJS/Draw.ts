@@ -1,3 +1,6 @@
+"use client";
+
+import { resetAllShapes, setShapes } from "@/lib/localStorage/localStorage";
 import { Shape, Tools } from "@/lib/types";
 import rough from "roughjs";
 
@@ -114,6 +117,7 @@ export class Draw {
   clear() {
     this.shapes = [];
     this.renderBackground();
+    resetAllShapes();
   }
 
   // --- Private Methods ---
@@ -346,6 +350,7 @@ export class Draw {
     }
 
     this.redrawShapes();
+    setShapes(this.shapes);
   };
 
   // --- Helper: Erase Logic ---
@@ -518,4 +523,13 @@ export class Draw {
     return [(x - this.offsetX) / this.scale, (y - this.offsetY) / this.scale];
   }
 
+  // Add shape to the canvas and redraw
+  public addShape(shape: Shape) {
+    this.shapes.push(shape);
+    this.redrawShapes();
+  }
+
+  public getAllShapes(): Shape[] {
+    return this.shapes;
+  }
 }

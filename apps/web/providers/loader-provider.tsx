@@ -20,7 +20,7 @@ export function LoaderProvider({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-3 bg-white/60 dark:bg-black/60 backdrop-blur-md transition-opacity duration-200">
           <Spinner
             variant="bars"
-            size="40"
+            size="25"
             className="text-gray-800 dark:text-gray-100"
           />
           {/* <p className="text-gray-800 dark:text-gray-200 text-sm font-medium animate-pulse">
