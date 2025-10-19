@@ -111,20 +111,17 @@ export default function Canvas({ roomId }: CanvasProps) {
 
   return (
     <>
-      {/* Top Left Menu */}
       <div className="absolute top-4 left-3 z-50">
         <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
 
-      {/* Top Right Controls */}
       <div className="fixed top-4 right-3 flex items-center gap-2 z-50">
         <ProfileMenu />
         <ModeToggle />
         <SocialMedia />
       </div>
 
-      {/* Center Top AI Tool (hidden on small screens) */}
-      <div className="hidden sm:flex fixed top-5 right-20 -translate-x-1/2 z-40 w-full max-w-md justify-center">
+      <div className="hidden sm:flex fixed top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">
         <AI
           onShapeCreated={(newShape) => {
             if (drawing) {
@@ -136,7 +133,6 @@ export default function Canvas({ roomId }: CanvasProps) {
         />
       </div>
 
-      {/* Editor Sidebar (desktop) */}
       <div className="hidden lg:flex fixed left-3 top-1/2 -translate-y-1/2 h-auto max-h-[85vh] overflow-y-auto z-40">
         <DrawingEditors
           strokeColor={strokeColor}
@@ -150,7 +146,6 @@ export default function Canvas({ roomId }: CanvasProps) {
         />
       </div>
 
-      {/* Mobile Editor Drawer */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-2 pb-3">
         <div className="bg-zinc-900/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-t-2xl shadow-lg p-3">
           <DrawingEditors
@@ -166,24 +161,23 @@ export default function Canvas({ roomId }: CanvasProps) {
         </div>
       </div>
 
-      {/* Zoom (bottom-left, adjusts for mobile) */}
       <div className="fixed bottom-20 sm:bottom-5 left-3 z-40">
         <Zoom drawing={drawing} />
       </div>
 
-      {/* Total Users (bottom-right) */}
       <div className="fixed bottom-20 sm:bottom-5 right-3 z-40">
         <TotalUsers />
       </div>
 
-      {/* Dock Toolbar */}
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
         <Dock className="items-end pb-3 flex-wrap sm:flex-nowrap">
           {shapes.map((item, idx) => (
             <div key={idx} onClick={() => setSelectedShape(item.id)}>
               <DockItem
                 className={`aspect-square rounded-full bg-gray-200 dark:bg-[#232329] hover:cursor-pointer transition ${
-                  selectedShape === item.id ? "scale-110 ring-2 ring-orange-500" : ""
+                  selectedShape === item.id
+                    ? "scale-110 ring-2 ring-orange-500"
+                    : ""
                 }`}
               >
                 <DockLabel>{item.title}</DockLabel>
@@ -196,7 +190,6 @@ export default function Canvas({ roomId }: CanvasProps) {
         </Dock>
       </div>
 
-      {/* Main Canvas */}
       <canvas
         ref={myRef}
         className={`fixed top-0 left-0 w-full h-full z-0 ${
