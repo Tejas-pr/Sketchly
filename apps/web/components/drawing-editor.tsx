@@ -15,7 +15,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { Minus } from "lucide-react";
-import { strokeColors, strokeWidths, fillStyles, backgroundColors } from "@/lib/editor-tools";
+import {
+  strokeColors,
+  strokeWidths,
+  fillStyles,
+  backgroundColors,
+} from "@/lib/editor-tools";
 
 export default function DrawingEditors({
   strokeColor,
@@ -39,20 +44,22 @@ export default function DrawingEditors({
   return (
     <div
       className="
-        w-56 rounded-xl p-4 flex flex-col gap-4 shadow-lg border
+        w-full md:w-56
+        rounded-xl p-3 md:p-4 flex flex-col gap-3 md:gap-4 shadow-lg border
         bg-white text-zinc-900 border-zinc-200
         dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-800
+        max-h-[90vh] overflow-y-auto
       "
     >
-      {/* Stroke */}
+      {/* --- Stroke --- */}
       <div>
         <h3 className="text-sm font-medium mb-2">Stroke</h3>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-1">
           {strokeColors.map((color, i) => (
             <Tooltip key={i}>
               <TooltipTrigger asChild>
                 <button
-                  className={`w-6 h-6 rounded-md border-2 transition hover:cursor-pointer
+                  className={`min-w-6 w-6 h-6 rounded-md border-2 transition hover:cursor-pointer
                     ${
                       strokeColor === color.value
                         ? "border-orange-500 scale-110"
@@ -70,15 +77,15 @@ export default function DrawingEditors({
         </div>
       </div>
 
-      {/* Stroke Width */}
+      {/* --- Stroke Width --- */}
       <div>
         <h3 className="text-sm font-medium mb-2">Stroke Width</h3>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-1">
           {strokeWidths.map((width, i) => (
             <Tooltip key={i}>
               <TooltipTrigger asChild>
                 <button
-                  className={`w-6 h-6 rounded-md border-2 transition flex items-center justify-center hover:cursor-pointer
+                  className={`min-w-6 w-6 h-6 rounded-md border-2 transition flex items-center justify-center hover:cursor-pointer
                     ${
                       strokeWidth === width
                         ? "border-orange-500 scale-110"
@@ -100,15 +107,15 @@ export default function DrawingEditors({
         </div>
       </div>
 
-      {/* Background Colors */}
+      {/* --- Background Colors --- */}
       <div>
         <h3 className="text-sm font-medium mb-2">Background Colors</h3>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap sm:flex-nowrap overflow-x-auto pb-1">
           {backgroundColors.map((bgcolor, i) => (
             <Tooltip key={i}>
               <TooltipTrigger asChild>
                 <button
-                  className={`w-6 h-6 rounded-md border-2 transition hover:cursor-pointer
+                  className={`min-w-6 w-6 h-6 rounded-md border-2 transition hover:cursor-pointer
                     ${
                       backgroundColor === bgcolor.value
                         ? "border-orange-500 scale-110"
@@ -126,13 +133,16 @@ export default function DrawingEditors({
         </div>
       </div>
 
-      {/* Fill Style */}
+      {/* --- Fill Style --- */}
       <div>
         <h3 className="text-sm font-medium mb-2">Fill Style</h3>
-        <Select onValueChange={(value) => setSelectedFillStyle(value)}>
+        <Select
+          onValueChange={(value) => setSelectedFillStyle(value)}
+          value={selectedFillStyle}
+        >
           <SelectTrigger
             className="
-              w-[180px] border-zinc-300 text-zinc-800
+              w-full md:w-[180px] border-zinc-300 text-zinc-800
               dark:border-zinc-700 dark:text-zinc-100
             "
           >
