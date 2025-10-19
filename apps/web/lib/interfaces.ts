@@ -1,3 +1,5 @@
+import { PopupType } from "./types";
+
 export interface SignUp {
   name: string;
   email: string;
@@ -25,4 +27,10 @@ export interface LoginFormProps extends React.ComponentProps<"div"> {
 
 export interface DropdownmenuProps {
   onResetCanvas: () => void
+}
+
+export interface PopupContextValue {
+  popupType: PopupType;
+  openPopup: (type: Exclude<PopupType, null>) => void;
+  closePopup: () => void;
 }
