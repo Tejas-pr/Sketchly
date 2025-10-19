@@ -1,32 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User } from "lucide-react";
+import { User, Globe } from "lucide-react";
 import { CountingNumber } from "@workspace/ui/components/ui/shadcn-io/counting-number";
-import { totalUsers } from "@/app/actions/actions";
+import { getVisit, totalUsers } from "@/app/actions/actions";
 
 export function TotalUsers() {
   const [userCount, setUserCount] = useState<number>(0);
+  const [visite, setVisite] = useState<number>(0);
 
   useEffect(() => {
     const fetchCount = async () => {
       const count = await totalUsers();
+      const visite = await getVisit();
       setUserCount(count);
+      setVisite(visite);
     };
     fetchCount();
   }, []);
 
   return (
-    <div className="flex items-center gap-2 border border-border rounded-xl px-4 py-2 bg-background text-foreground shadow-sm">
-      <User className="w-5 h-5 text-muted-foreground" />
-      <div className="h-2 w-2 rounded-full bg-green-500" />
-      <p className="text-sm font-medium">Total AI users:</p>
-      <CountingNumber
-        number={userCount}
-        inView={true}
-        transition={{ stiffness: 100, damping: 30 }}
-        className="text-lg font-semibold text-primary"
-      />
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-3 shadow-sm w-fit">
+      {/* Visitors */}
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
+        <Globe className="w-4 h-4 text-muted-foreground" />
+        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+        <p className="text-xs text-muted-foreground">Visitors:</p>
+        <CountingNumber
+          number={visite}
+          inView={true}
+          transition={{ stiffness: 100, damping: 30 }}
+          className="text-sm font-semibold text-primary"
+        />
+      </div>
+
+      {/* AI Users */}
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
+        <User className="w-4 h-4 text-muted-foreground" />
+        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+        <p className="text-xs text-muted-foreground">AI Users:</p>
+        <CountingNumber
+          number={userCount}
+          inView={true}
+          transition={{ stiffness: 100, damping: 30 }}
+          className="text-sm font-semibold text-primary"
+        />
+      </div>
     </div>
   );
 }
