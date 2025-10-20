@@ -6,7 +6,8 @@
     "build": "turbo build",
     "dev": "dotenv -- turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:migrate": "cd packages/database && pnpm db:generate && cd ../.."
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
