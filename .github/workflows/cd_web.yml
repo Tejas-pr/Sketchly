@@ -21,6 +21,8 @@ jobs:
         with:
           context: .
           file: ./docker/DockerFile.frontend
+          build-args: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
           push: true
           tags: tejaspr/sketchly-web:${{ github.sha }}
 
