@@ -1,0 +1,46 @@
+volumes:
+  database-data:
+
+networks:
+  sketchly-network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sketchly
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sketchly-network
+  app:
+    build:
+      context: .
+      dockerfile: docker/DockerFile.frontend
+      args:
+        DATABASE_URL: postgresql://postgres:postgres@db:5432/sketchly?schema=public
+    container_name: sketchly-docker
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/sketchly?schema=public
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/.next
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+    networks:
+      - sketchly-network
