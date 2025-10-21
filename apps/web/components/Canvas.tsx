@@ -41,7 +41,8 @@ export default function Canvas({ roomId }: CanvasProps) {
   const { socket } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
-
+  const [smallScreen, setSmallScreen] = useState<boolean>(false);
+  
   // Editors
   const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
   const [strokeWidth, setStrokeWidth] = useState<number>(1);
@@ -50,6 +51,14 @@ export default function Canvas({ roomId }: CanvasProps) {
 
   useEffect(() => {
     setMounted(true);
+
+    const handleResize = () => {
+      setSmallScreen(window.innerWidth < 768);
+    };
+
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -115,7 +124,7 @@ export default function Canvas({ roomId }: CanvasProps) {
         <Dropdownmenu onResetCanvas={handleResetCanvas} />
       </div>
 
-      <div className="fixed top-4 right-3 flex items-center gap-2 z-50">
+      <div className="flex fixed top-4 right-3 items-center gap-2 z-50">
         <ProfileMenu />
         <ModeToggle />
         <SocialMedia />
@@ -146,31 +155,19 @@ export default function Canvas({ roomId }: CanvasProps) {
         />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-2 pb-3">
-        <div className="bg-zinc-900/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-t-2xl shadow-lg p-3">
-          <DrawingEditors
-            strokeColor={strokeColor}
-            setStrokeColor={setStrokeColor}
-            strokeWidth={strokeWidth}
-            setStrokeWidth={setStrokeWidth}
-            selectedFillStyle={selectedFillStyle}
-            setSelectedFillStyle={setSelectedFillStyle}
-            backgroundColor={backgroundColor}
-            setBackgroundColor={setBackgroundColor}
-          />
-        </div>
-      </div>
-
-      <div className="fixed bottom-20 sm:bottom-5 left-3 z-40">
+      <div className="hidden md:block fixed bottom-20 sm:bottom-5 left-3 z-40">
         <Zoom drawing={drawing} />
       </div>
 
-      <div className="fixed bottom-20 sm:bottom-5 right-3 z-40">
+      <div className="hidden md:block fixed bottom-20 sm:bottom-5 right-3 z-40">
         <TotalUsers />
       </div>
 
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
-        <Dock className="items-end pb-3 flex-wrap sm:flex-nowrap">
+        <Dock
+          magnification={smallScreen ? 40 : 80}
+          className={`items-end pb-3 ${smallScreen ? "scale-65" : "scale-100"}`}
+        >
           {shapes.map((item, idx) => (
             <div key={idx} onClick={() => setSelectedShape(item.id)}>
               <DockItem
@@ -181,7 +178,11 @@ export default function Canvas({ roomId }: CanvasProps) {
                 }`}
               >
                 <DockLabel>{item.title}</DockLabel>
-                <DockIcon className="w-5 h-5 text-zinc-700 dark:text-zinc-200">
+                <DockIcon
+                  className={`${
+                    smallScreen ? "w-4 h-4" : "w-5 h-5"
+                  } text-zinc-700 dark:text-zinc-200`}
+                >
                   {item.icon}
                 </DockIcon>
               </DockItem>
