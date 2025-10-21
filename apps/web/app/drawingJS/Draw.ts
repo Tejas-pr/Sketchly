@@ -41,6 +41,7 @@ export class Draw {
     const ctx = this.canvas.getContext("2d");
     if (!ctx) throw new Error("Could not get 2D context");
     this.ctx = ctx;
+    this.canvas.style.touchAction = "none";
 
     this.setupResizeHandler();
   }
@@ -55,41 +56,52 @@ export class Draw {
   }
 
   // --- Public API ---
+  // initMouseHandler() {
+  //   this.canvas.addEventListener("mousedown", this.handleMouseDown);
+  //   this.canvas.addEventListener("mousemove", this.handleMouseMove);
+  //   this.canvas.addEventListener("mouseup", this.handleMouseUp);
+  //   this.canvas.addEventListener("wheel", this.handleWheel, { passive: false });
+
+  //   // Right click drag for pan
+  //   this.canvas.addEventListener("mousedown", (e) => {
+  //     if (e.button === 2) { // right click
+  //       this.isPanning = true;
+  //       this.panStart = [e.clientX - this.offsetX, e.clientY - this.offsetY];
+  //       e.preventDefault();
+  //     }
+  //   });
+
+  //   this.canvas.addEventListener("mousemove", (e) => {
+  //     if (this.isPanning) {
+  //       this.offsetX = e.clientX - this.panStart[0];
+  //       this.offsetY = e.clientY - this.panStart[1];
+  //       this.redrawShapes();
+  //     }
+  //   });
+
+  //   this.canvas.addEventListener("mouseup", (e) => {
+  //     if (this.isPanning) this.isPanning = false;
+  //   });
+
+  //   // Disable context menu to allow right-click pan
+  //   this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+  // }
+
   initMouseHandler() {
-    this.canvas.addEventListener("mousedown", this.handleMouseDown);
-    this.canvas.addEventListener("mousemove", this.handleMouseMove);
-    this.canvas.addEventListener("mouseup", this.handleMouseUp);
+    // Use pointer events (works on both mouse and touch)
+    this.canvas.addEventListener("pointerdown", this.handlePointerDown);
+    this.canvas.addEventListener("pointermove", this.handlePointerMove);
+    this.canvas.addEventListener("pointerup", this.handlePointerUp);
     this.canvas.addEventListener("wheel", this.handleWheel, { passive: false });
 
-    // Right click drag for pan
-    this.canvas.addEventListener("mousedown", (e) => {
-      if (e.button === 2) { // right click
-        this.isPanning = true;
-        this.panStart = [e.clientX - this.offsetX, e.clientY - this.offsetY];
-        e.preventDefault();
-      }
-    });
-
-    this.canvas.addEventListener("mousemove", (e) => {
-      if (this.isPanning) {
-        this.offsetX = e.clientX - this.panStart[0];
-        this.offsetY = e.clientY - this.panStart[1];
-        this.redrawShapes();
-      }
-    });
-
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (this.isPanning) this.isPanning = false;
-    });
-
-    // Disable context menu to allow right-click pan
+    // Right-click pan (still works)
     this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
   destroy() {
-    this.canvas.removeEventListener("mousedown", this.handleMouseDown);
-    this.canvas.removeEventListener("mousemove", this.handleMouseMove);
-    this.canvas.removeEventListener("mouseup", this.handleMouseUp);
+    this.canvas.removeEventListener("pointerdown", this.handlePointerDown);
+    this.canvas.removeEventListener("pointermove", this.handlePointerMove);
+    this.canvas.removeEventListener("pointerup", this.handlePointerUp);
   }
 
   setTool(tool: Tools | null) {
@@ -110,6 +122,13 @@ export class Draw {
 
   setTheme(theme: string | undefined) {
     this.theme = theme;
+
+    if (theme === "dark") {
+      this.stroke = "#ffffff";
+    } else {
+      this.stroke = "#000000";
+    }
+
     this.renderBackground();
     this.redrawShapes();
   }
@@ -532,4 +551,74 @@ export class Draw {
   public getAllShapes(): Shape[] {
     return this.shapes;
   }
+
+
+  private handlePointerDown = (e: PointerEvent) => {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    this.startX = x;
+    this.startY = y;
+    this.isDrawing = true;
+
+    if (this.tool === "eraser") {
+      this.eraseShapeAt(x, y);
+    }
+  };
+
+  private handlePointerMove = (e: PointerEvent) => {
+    if (!this.isDrawing) return;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (this.tool === "eraser") {
+      this.eraseShapeAt(x, y);
+      return;
+    }
+
+    if (this.tool === "pencil") {
+      this.currentPencilPoints.push([x, y]);
+      this.redrawShapes();
+      this.drawShape({
+        type: "pencil",
+        points: this.currentPencilPoints,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+      });
+    } else {
+      const shape = this.createShape(this.startX, this.startY, x, y);
+      this.redrawShapes();
+      if (shape) this.drawShape(shape);
+    }
+  };
+
+  private handlePointerUp = (e: PointerEvent) => {
+    this.isDrawing = false;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (this.tool === "eraser") return;
+
+    if (this.tool === "pencil") {
+      this.shapes.push({
+        type: "pencil",
+        points: this.currentPencilPoints,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+      });
+      this.currentPencilPoints = [];
+    } else {
+      const shape = this.createShape(this.startX, this.startY, x, y);
+      if (shape) this.shapes.push(shape);
+    }
+
+    this.redrawShapes();
+    setShapes(this.shapes);
+  };
+
 }
