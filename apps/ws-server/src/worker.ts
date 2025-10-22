@@ -1,5 +1,6 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "./redis-connection";
+import { prisma } from "@repo/db";
 
 const worker = new Worker('chat-worker', async (job) => {
     const { roomId, message, userId } = job.data;
@@ -24,3 +25,10 @@ worker.on("completed", (job) => {
 worker.on("failed", (job, err) => {
     console.error(`❌ Job ${job?.id} failed:`, err);
 });
+
+async function getDATA() {
+    const user = await prisma.user.findFirst();
+    console.log("<>>>>>>>>>", user);
+}
+
+getDATA();
