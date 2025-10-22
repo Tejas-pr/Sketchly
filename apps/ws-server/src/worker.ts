@@ -2,13 +2,24 @@ import { Worker } from "bullmq";
 import { redisConnection } from "./redis-connection";
 import { prisma } from "@repo/db";
 
-const worker = new Worker('chat-worker', async (job) => {
-    const { roomId, message, userId } = job.data;
-    console.log("data", roomId, message, userId);
+const worker = new Worker('shapes-worker', async (job) => {
+    const { roomId, shapes, userId } = job.data;
+
     console.log("Worker processing job:", job.id, job.data);
+    await prisma.shapes.create({
+        data: {
+            roomId,
+            userId,
+            message: shapes
+        }
+    });
+    console.log("-------------> :)");
+
 }, {
     connection: redisConnection
 });
+
+console.log("running the worker ...");
 
 worker.on("error", (err) => {
     console.error("Worker connection error:", err);
@@ -25,10 +36,3 @@ worker.on("completed", (job) => {
 worker.on("failed", (job, err) => {
     console.error(`❌ Job ${job?.id} failed:`, err);
 });
-
-async function getDATA() {
-    const user = await prisma.user.findFirst();
-    console.log("<>>>>>>>>>", user);
-}
-
-getDATA();

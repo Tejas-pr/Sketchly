@@ -4,7 +4,7 @@ import { Queue } from 'bullmq';
 import { redisConnection } from "./redis-connection";
 
 const wss = new WebSocketServer({ port: Number(process.env.WS_PORT) || 8080 });
-const chatQueue = new Queue('chat-worker', {
+const chatQueue = new Queue('shapes-worker', {
     connection: redisConnection
 });
 
@@ -50,30 +50,32 @@ wss.on("connection", (ws, req) => {
         }
 
         if (parsedData.type === 'join_room') {
-            const roomId = String(parsedData.roomId)
+            const roomId = parsedData.roomId
             if (!user.rooms.includes(roomId)) {
                 user.rooms.push(roomId);
+                ws.send(`joined room ${roomId} successfully!`);
             }
         }
 
         if (parsedData.type === 'leave_room') {
-            const roomId = String(parsedData.roomId);
+            const roomId = parsedData.roomId;
             user.rooms = user.rooms.filter(x => x !== roomId);
+            ws.send(`left room ${roomId} successfully!`);
         }
 
-        if (parsedData.type === 'chat_room') {
-            const roomId = String(parsedData.roomId);
-            const message = parsedData.message;
+        if (parsedData.type === 'shape') {
+            const roomId = parsedData.roomId;
+            const shapes = parsedData.shapes;
 
-            await chatQueue.add("new-message", {
+            await chatQueue.add("shapes", {
                 roomId,
-                message,
+                shapes,
                 userId
             })
 
             users.forEach(async (e) => {
                 if (e.rooms.includes(roomId)) {
-                    e.ws.send(message);
+                    e.ws.send(shapes);
                 }
             })
         }

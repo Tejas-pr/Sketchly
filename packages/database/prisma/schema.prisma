@@ -1,8 +1,7 @@
-
 generator client {
-  provider      = "prisma-client-js" // here do not use the new client (prisma-client)
-  binaryTargets = ["native", "linux-musl", "rhel-openssl-3.0.x"]  // first one is for cross-platform, second one for docker, last one for serverless environment. safe to include all
-  output        = "../src/generated/client" // it is better to include the generator inside `src/` or `app/` if `src/` not available.
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "rhel-openssl-3.0.x"]
+  output        = "../generated/prisma"
 }
 
 datasource db {
@@ -20,6 +19,8 @@ model User {
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  room          Room[]
+  shapes        Shapes[]
 
   @@unique([email])
   @@map("user")
@@ -74,5 +75,24 @@ model Visit {
   id        Int      @id @default(autoincrement())
   ip        String?
   userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id])
+  shapes    Shapes[]
+}
+
+model Shapes {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  userId    String
+  message   String
+  room      Room     @relation(fields: [roomId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }

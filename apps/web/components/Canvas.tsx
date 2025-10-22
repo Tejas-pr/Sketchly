@@ -128,6 +128,9 @@ export default function Canvas({ roomId }: CanvasProps) {
         <ProfileMenu />
         <ModeToggle />
         <SocialMedia />
+        {/* <button onClick={() => {
+          createRoom();
+        }}>test button</button> */}
       </div>
 
       <div className="hidden sm:flex fixed top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">

@@ -19,6 +19,6 @@
     "@workspace/typescript-config": "workspace:*"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/client.ts"
   }
 }
