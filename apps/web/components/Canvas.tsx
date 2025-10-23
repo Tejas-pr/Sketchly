@@ -40,7 +40,7 @@ export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
   const [mounted, setMounted] = useState(false);
   const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
-  const { socket } = useSocket(roomId);
+  const { socket, newshapes } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
   const [smallScreen, setSmallScreen] = useState<boolean>(false);
@@ -60,12 +60,17 @@ export default function Canvas({ roomId }: CanvasProps) {
     };
 
     handleResize();
-    if(roomId) {
+    if (roomId) {
       getroomID();
     }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (!drawing || !newshapes) return;
+    drawing.addShape(newshapes);
+  }, [newshapes, drawing]);
 
   useEffect(() => {
     if (mounted && myRef.current) {
@@ -126,7 +131,7 @@ export default function Canvas({ roomId }: CanvasProps) {
   };
 
   const getroomID = async () => {
-    if(roomId === undefined || roomId === null) {
+    if (roomId === undefined || roomId === null) {
       return;
     }
     const resolvedRoomId = await getRoomIdBySlug(roomId);
@@ -135,7 +140,7 @@ export default function Canvas({ roomId }: CanvasProps) {
       return;
     }
     setRoomNumber(resolvedRoomId.room_details?.id);
-  }
+  };
 
   return (
     <>

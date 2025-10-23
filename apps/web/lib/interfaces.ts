@@ -1,4 +1,4 @@
-import { PopupType } from "./types";
+import { PopupType, Shape } from "./types";
 
 export interface SignUp {
   name: string;
@@ -19,6 +19,7 @@ export interface UseSocketResult {
   socket: WebSocket | null;
   isConnected: boolean;
   error: string | null;
+  newshapes: any;
 }
 
 export interface LoginFormProps extends React.ComponentProps<"div"> {

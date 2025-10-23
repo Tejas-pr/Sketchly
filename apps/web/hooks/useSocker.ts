@@ -11,6 +11,7 @@ import { getUserSession } from "@/app/api/auth/session";
 export function useSocket(roomId: string | null | undefined): UseSocketResult {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shapes, setShapes] = useState<any>();
   const socketRef = useRef<WebSocket | null>(null);
   const { setLoading } = useLoader();
   const router = useRouter();
@@ -73,6 +74,16 @@ export function useSocket(roomId: string | null | undefined): UseSocketResult {
           toast.success(`Joined room ${roomId}`);
         };
 
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setShapes(data);
+
+          } catch (err) {
+            console.log("ℹ️ Non-JSON message:", event.data);
+          }
+        };
+
         socket.onerror = (err) => {
           if (!isMounted) return;
           console.error("WebSocket error:", err);
@@ -106,6 +117,7 @@ export function useSocket(roomId: string | null | undefined): UseSocketResult {
 
   return {
     socket: socketRef.current,
+    newshapes: shapes,
     isConnected,
     error,
   };

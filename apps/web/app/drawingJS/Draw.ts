@@ -522,26 +522,38 @@ export class Draw {
     if (this.tool === "eraser") return;
 
     if (this.tool === "pencil") {
-      this.shapes.push({
-        type: "pencil",
+      const pencil_data = {
+        type: "pencil" as const,
         points: this.currentPencilPoints,
         stroke: this.stroke,
         strokeWidth: this.strokeWidth,
-      });
+      };
+
+      this.shapes.push(pencil_data);
       this.currentPencilPoints = [];
+
+      if (this.socket && this.socket.readyState === WebSocket.OPEN && this.roomId !== null) {
+        const message = {
+          type: "shape",
+          roomId: this.roomId,
+          shapes: JSON.stringify(pencil_data),
+        };
+        this.socket.send(JSON.stringify(message));
+      }
     } else {
       const shape = this.createShape(this.startX, this.startY, x, y);
       if (shape) this.shapes.push(shape);
+
       if (this.socket && this.socket.readyState === WebSocket.OPEN && this.roomId !== null) {
         const message = {
           type: "shape",
           roomId: this.roomId,
           shapes: JSON.stringify(shape),
         };
-        console.log(">>>>>>>>>>>>>>>>>>>messagemessage", message);
         this.socket.send(JSON.stringify(message));
       }
     }
+
     this.redrawShapes();
     setShapes(this.shapes);
   };
