@@ -8,12 +8,15 @@ import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/components/sonner";
 import { createRoom } from "@/app/actions/room";
 import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
+import { getUserSession } from "@/app/api/auth/session";
+import { usePopup } from "@/providers/popup-provider";
 
 export function LiveCollaboration() {
   const [roomName, setRoomName] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [canCopy, setCanCopy] = useState<boolean>(false);
+  const { openPopup } = usePopup();
 
   const baseUrl = useMemo(() => {
     const envUrl = process.env.NEXT_PUBLIC_FE_URL;
@@ -35,7 +38,16 @@ export function LiveCollaboration() {
   };
 
   const create_room = async (room: string) => {
+    const session = await getUserSession();
     setLoading(true);
+    if (!session) {
+      setLoading(false);
+      toast(
+        "✨ Please log in or sign up to access real-time collaboration features!"
+      );
+      openPopup("login");
+      return;
+    }
     try {
       const room_deatils = await createRoom(room);
       if (room_deatils?.success) {
