@@ -3,37 +3,21 @@
 import { useSocket } from "@/hooks/useSocker";
 import { useEffect, useRef, useState } from "react";
 import { CanvasProps } from "@/lib/interfaces";
-import {
-  Dock,
-  DockIcon,
-  DockItem,
-  DockLabel,
-} from "@workspace/ui/components/ui/shadcn-io/dock";
-import {
-  Square,
-  Circle,
-  Triangle,
-  Diamond,
-  ArrowRight,
-  Minus,
-  Pencil,
-  MousePointer2,
-  Eraser,
-  TypeOutline,
-} from "lucide-react";
+import { Dock, DockIcon, DockItem, DockLabel } from "@workspace/ui/components/ui/shadcn-io/dock";
+import { Square, Circle, Triangle, Diamond, ArrowRight, Minus, Pencil, MousePointer2, Eraser, TypeOutline } from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
 import { ProfileMenu } from "./profile-menu";
 import { Draw } from "@/app/drawingJS/Draw";
 import { useTheme } from "next-themes";
-import { ShapeOption, Tools } from "@/lib/types";
+import { Shape, ShapeOption, Tools } from "@/lib/types";
 import Zoom from "./zoom";
 import DrawingEditors from "./drawing-editor";
 import { SocialMedia } from "./social-media";
 import { TotalUsers } from "./total-users";
 import { AI } from "./ai";
 import { getShapes, setShapes } from "@/lib/localStorage/localStorage";
-import { getRoomIdBySlug } from "@/app/actions/room";
+import { clearCanvas, getAllShapesByRoom, getRoomIdBySlug } from "@/app/actions/room";
 import { toast } from "@workspace/ui/components/sonner";
 
 export default function Canvas({ roomId }: CanvasProps) {
@@ -78,8 +62,27 @@ export default function Canvas({ roomId }: CanvasProps) {
       setDrawing(g);
       g.initMouseHandler();
 
-      const saved = getShapes();
-      if (saved) saved.forEach((shape) => g.addShape(shape));
+      const initShapes = async () => {
+        let saved: Shape[] |  null = [];
+
+        try {
+          if (roomId) {
+            const allRoomShapes = await handleAllShapes();
+            if (allRoomShapes) saved = allRoomShapes;
+          } else {
+            saved = getShapes();
+          }
+
+          if (saved?.length) {
+            saved.forEach((shape) => g.addShape(shape));
+          }
+        } catch (error) {
+          console.error("Error loading shapes:", error);
+          toast.error("Failed to load room shapes");
+        }
+      };
+
+      initShapes();
 
       return () => g.destroy();
     }
@@ -101,17 +104,7 @@ export default function Canvas({ roomId }: CanvasProps) {
     if (themeToUse) {
       drawing.setTheme(themeToUse);
     }
-  }, [
-    selectedShape,
-    drawing,
-    theme,
-    systemTheme,
-    mounted,
-    strokeColor,
-    strokeWidth,
-    selectedFillStyle,
-    backgroundColor,
-  ]);
+  }, [selectedShape, drawing, theme, systemTheme, mounted, strokeColor, strokeWidth, selectedFillStyle, backgroundColor]);
 
   const shapes: ShapeOption[] = [
     { title: "Rectangle", icon: <Square />, id: "rectangle" },
@@ -128,6 +121,32 @@ export default function Canvas({ roomId }: CanvasProps) {
 
   const handleResetCanvas = () => {
     drawing?.clear();
+    if (roomId) {
+      clearCanvas(roomNumber);
+      toast.success("Canvas cleared successfully!", {
+        description: `All shapes in room ${roomId} have been removed for everyone.`,
+      });
+    }
+  };
+
+  const handleAllShapes = async (): Promise<Shape[] | null> => {
+    try {
+      const response = await getAllShapesByRoom(roomNumber);
+
+      if (response.success && response.all_shapes?.length) {
+        toast.success(
+          `🧩 Loaded ${response.all_shapes.length} shapes from the room`
+        );
+        return response.all_shapes;
+      } else {
+        toast("No shapes found in this room yet.");
+        return null;
+      }
+    } catch (e) {
+      console.error("Error fetching room shapes:", e);
+      toast.error("Error fetching room shapes");
+      return null;
+    }
   };
 
   const getroomID = async () => {
@@ -152,9 +171,6 @@ export default function Canvas({ roomId }: CanvasProps) {
         <ProfileMenu />
         <ModeToggle />
         <SocialMedia />
-        {/* <button onClick={() => {
-          createRoom();
-        }}>test button</button> */}
       </div>
 
       <div className="hidden sm:flex fixed top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">
