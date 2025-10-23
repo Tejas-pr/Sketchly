@@ -33,6 +33,8 @@ import { SocialMedia } from "./social-media";
 import { TotalUsers } from "./total-users";
 import { AI } from "./ai";
 import { getShapes, setShapes } from "@/lib/localStorage/localStorage";
+import { getRoomIdBySlug } from "@/app/actions/room";
+import { toast } from "@workspace/ui/components/sonner";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -42,12 +44,13 @@ export default function Canvas({ roomId }: CanvasProps) {
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
   const [smallScreen, setSmallScreen] = useState<boolean>(false);
-  
+
   // Editors
   const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
   const [strokeWidth, setStrokeWidth] = useState<number>(1);
   const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
   const [backgroundColor, setBackgroundColor] = useState<string>("");
+  const [roomNumber, setRoomNumber] = useState<any>();
 
   useEffect(() => {
     setMounted(true);
@@ -56,14 +59,17 @@ export default function Canvas({ roomId }: CanvasProps) {
       setSmallScreen(window.innerWidth < 768);
     };
 
-    handleResize(); // run once on mount
+    handleResize();
+    if(roomId) {
+      getroomID();
+    }
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
     if (mounted && myRef.current) {
-      const g = new Draw(myRef.current);
+      const g = new Draw(myRef.current, socket);
       setDrawing(g);
       g.initMouseHandler();
 
@@ -76,7 +82,8 @@ export default function Canvas({ roomId }: CanvasProps) {
 
   useEffect(() => {
     if (!drawing || !mounted) return;
-
+    drawing.setSocket(socket);
+    drawing.setRoomId(roomNumber);
     drawing.setTool(selectedShape);
     drawing.setEditorValues({
       strokeColor,
@@ -117,6 +124,18 @@ export default function Canvas({ roomId }: CanvasProps) {
   const handleResetCanvas = () => {
     drawing?.clear();
   };
+
+  const getroomID = async () => {
+    if(roomId === undefined || roomId === null) {
+      return;
+    }
+    const resolvedRoomId = await getRoomIdBySlug(roomId);
+    if (resolvedRoomId === undefined) {
+      toast("Unable to find the room id! Please try again.");
+      return;
+    }
+    setRoomNumber(resolvedRoomId.room_details?.id);
+  }
 
   return (
     <>
