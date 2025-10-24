@@ -25,8 +25,10 @@ export const useSocket = (roomId?: string) => {
       const session = await getUserSession();
       if (!session) {
         setLoading(false);
-        toast("Please login to use live collaboration");
-        router.push("/");
+        toast("Please login to use live collaboration", {
+          description: "Redirecting to log in page"
+        });
+        router.push("/login");
         return;
       }
 
