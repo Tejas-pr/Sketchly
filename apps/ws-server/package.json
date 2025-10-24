@@ -1,0 +1,21 @@
+{
+  "name": "ws-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc -b && node dist/index.js & node dist/worker.js",
+    "build": "tsc -b",
+    "start": "node dist/index.js & node dist/worker.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "@workspace/typescript-config": "workspace:*",
+    "@repo/db": "workspace:*",
+    "bullmq": "^5.61.0",
+    "ws": "^8.18.3"
+  }
+}

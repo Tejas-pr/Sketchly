@@ -10,8 +10,7 @@ export default async function CanvasPage({ params }: MyPageProps) {
 
   return (
     <>
-      {/* <Canvas roomId={roomId} /> */}
-      <UnderConstruction />
+      <Canvas roomId={roomId} />
     </>
   );
 }

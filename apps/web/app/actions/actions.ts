@@ -79,12 +79,3 @@ export async function getVisit() {
   }
 }
 
-export async function getRoomIdbySlug(roomId: string | null | undefined): Promise<string | null> {
-  if (!roomId) return null;
-  try {
-    return null;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-}
