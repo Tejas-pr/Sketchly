@@ -22,7 +22,7 @@
 
 DEMO VIDEO:
 - 
-
+[demo-skethly.webm](https://github.com/user-attachments/assets/700f1af8-27a3-4189-b64c-3408e7091e6e)
 
 ## 📖 About
 
