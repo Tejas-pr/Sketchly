@@ -1,15 +1,17 @@
 "use client";
 
-import { getRoomIdbySlug } from "@/app/actions/actions";
 import { UseSocketResult } from "@/lib/interfaces";
 import { useLoader } from "@/providers/loader-provider";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@workspace/ui/components/sonner";
+import { getRoomIdBySlug } from "@/app/actions/room";
+import { getUserSession } from "@/app/api/auth/session";
 
 export function useSocket(roomId: string | null | undefined): UseSocketResult {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shapes, setShapes] = useState<any>();
   const socketRef = useRef<WebSocket | null>(null);
   const { setLoading } = useLoader();
   const router = useRouter();
@@ -17,7 +19,6 @@ export function useSocket(roomId: string | null | undefined): UseSocketResult {
   useEffect(() => {
     if (!roomId || socketRef.current) {
       setLoading(false);
-      toast.error("No room provided");
       return;
     }
 
@@ -38,23 +39,49 @@ export function useSocket(roomId: string | null | undefined): UseSocketResult {
       setError(null);
 
       try {
-        const resolvedRoomId = await getRoomIdbySlug(roomId);
-
-        if (!resolvedRoomId) {
+        const resolvedRoomId = await getRoomIdBySlug(roomId);
+        if (resolvedRoomId === undefined) {
+          toast("Unable to find the room id! Please try again.")
+          return;
+        }
+        const room_number = resolvedRoomId.room_details?.id;
+        const sessionData = await getUserSession();
+        if (sessionData === null) {
           if (!isMounted) return;
           setLoading(false);
-          toast.error("Room does not exist");
+          toast.error("Invalid user please log in!!");
           router.push("/");
           return;
         }
-
-        const socket = new WebSocket(`${wsUrl}?roomId=${resolvedRoomId}`);
+        if ('error' in sessionData) {
+          toast.error(sessionData.error);
+          throw new Error(sessionData.error);
+        }
+        const userId = sessionData.session.userId;
+        const socket = new WebSocket(`${wsUrl}?userId=${userId}`);
         socketRef.current = socket;
 
         socket.onopen = () => {
           if (!isMounted) return;
           setIsConnected(true);
           setLoading(false);
+
+          socket.send(JSON.stringify({
+            type: "join_room",
+            roomId: room_number
+          }));
+
+          toast.success(`Joined room ${roomId}`);
+        };
+
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setShapes(data);
+
+          } catch (err) {
+            console.log("ℹ️ Non-JSON message:", event.data);
+          }
         };
 
         socket.onerror = (err) => {
@@ -90,6 +117,7 @@ export function useSocket(roomId: string | null | undefined): UseSocketResult {
 
   return {
     socket: socketRef.current,
+    newshapes: shapes,
     isConnected,
     error,
   };

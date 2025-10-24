@@ -6,10 +6,17 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/components/sonner";
+import { createRoom } from "@/app/actions/room";
+import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
+import { getUserSession } from "@/app/api/auth/session";
+import { usePopup } from "@/providers/popup-provider";
 
 export function LiveCollaboration() {
-  const [roomName, setRoomName] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [roomName, setRoomName] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [canCopy, setCanCopy] = useState<boolean>(false);
+  const { openPopup } = usePopup();
 
   const baseUrl = useMemo(() => {
     const envUrl = process.env.NEXT_PUBLIC_FE_URL;
@@ -28,6 +35,36 @@ export function LiveCollaboration() {
     setCopied(true);
     toast.success("Link copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const create_room = async (room: string) => {
+    const session = await getUserSession();
+    setLoading(true);
+    if (!session) {
+      setLoading(false);
+      toast(
+        "✨ Please log in or sign up to access real-time collaboration features!"
+      );
+      openPopup("login");
+      return;
+    }
+    try {
+      const room_deatils = await createRoom(room);
+      if (room_deatils?.success) {
+        setLoading(false);
+        setCanCopy(true);
+        toast.success(room_deatils.message);
+      } else {
+        setLoading(false);
+        setCanCopy(false);
+        toast.warning(room_deatils?.message);
+      }
+    } catch (e) {
+      setLoading(false);
+      setCanCopy(false);
+      console.error(e);
+      toast.error("Fail to create room!!");
+    }
   };
 
   return (
@@ -82,24 +119,32 @@ export function LiveCollaboration() {
           </div>
         )}
 
-        {/* Copy Button */}
-        <Button
-          onClick={handleCopy}
-          disabled={!roomName}
-          className="w-full h-12 mt-4 inline-flex items-center justify-center gap-2 text-base"
-        >
-          {copied ? (
-            <>
-              <Check className="h-5 w-5" />
-              Link Copied!
-            </>
-          ) : (
-            <>
-              <Copy className="h-5 w-5" />
-              Copy Link
-            </>
-          )}
-        </Button>
+        <div>
+          <Button
+            onClick={() => create_room(roomName)}
+            disabled={!roomName}
+            className="w-full h-12 mt-4 inline-flex items-center justify-center gap-2 text-base"
+          >
+            {loading ? <Spinner /> : "Create Room"}
+          </Button>
+          <Button
+            onClick={handleCopy}
+            disabled={!roomName || !canCopy}
+            className="w-full h-12 mt-4 inline-flex items-center justify-center gap-2 text-base"
+          >
+            {copied ? (
+              <>
+                <Check className="h-5 w-5" />
+                Link Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-5 w-5" />
+                Copy Link
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
