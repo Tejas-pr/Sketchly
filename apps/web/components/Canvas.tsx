@@ -51,7 +51,7 @@ export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
   const [mounted, setMounted] = useState(false);
   const [selectedShape, setSelectedShape] = useState<Tools>("mousepointer");
-  const { socket, newshapes } = useSocket(roomId);
+  const { socket, newshapes, isConnected } = useSocket(roomId);
   const [drawing, setDrawing] = useState<Draw>();
   const { theme, systemTheme } = useTheme();
   const [smallScreen, setSmallScreen] = useState<boolean>(false);
@@ -213,7 +213,7 @@ export default function Canvas({ roomId }: CanvasProps) {
         {roomId && <Tooltip>
           <TooltipTrigger>
             <button className="px-3 py-3 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted">
-              <div className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
+              <div className={`h-2 w-2 rounded-full ${isConnected ? "bg-yellow-400" : "bg-red-400"} animate-pulse`} />
             </button>
           </TooltipTrigger>
           <TooltipContent>You are currently connected to room {roomId}.</TooltipContent>

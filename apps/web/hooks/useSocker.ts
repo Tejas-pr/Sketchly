@@ -63,7 +63,6 @@ export const useSocket = (roomId?: string) => {
       connectionTimeout = setTimeout(() => {
         if (socket.readyState !== WebSocket.OPEN) {
           setError("Unable to connect to WebSocket");
-          toast.error("Unable to connect to real-time server!");
           socket.close();
           setLoading(false);
           router.push("/");
@@ -100,11 +99,12 @@ export const useSocket = (roomId?: string) => {
       socket.onerror = () => {
         clearTimeout(connectionTimeout);
         setError("WebSocket error");
-        toast.error("Failed to connect!", {
-          description: "Redirecting to the main page!!"
-        });
         setLoading(false);
-        router.push("/");
+        setIsConnected(false);
+        toast("Redirecting in 4s");
+        setTimeout(() => {
+          router.push("/");
+        }, 4000);
       };
 
       socket.onclose = () => {
