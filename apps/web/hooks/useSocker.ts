@@ -8,117 +8,122 @@ import { toast } from "@workspace/ui/components/sonner";
 import { getRoomIdBySlug } from "@/app/actions/room";
 import { getUserSession } from "@/app/api/auth/session";
 
-export function useSocket(roomId: string | null | undefined): UseSocketResult {
+export const useSocket = (roomId?: string) => {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shapes, setShapes] = useState<any>();
-  const socketRef = useRef<WebSocket | null>(null);
   const { setLoading } = useLoader();
+
   const router = useRouter();
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (!roomId || socketRef.current) {
-      setLoading(false);
-      return;
-    }
-
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
-    if (!wsUrl) {
-      console.error("❌ No WebSocket URL provided!");
-      setError("No WebSocket URL provided");
-      setLoading(false);
-      toast.error("No WebSocket URL provided");
-      router.push("/");
-      return;
-    }
-
     let isMounted = true;
+    let connectionTimeout: NodeJS.Timeout;
 
-    const initSocket = async () => {
-      setLoading(true);
-      setError(null);
+    const init = async () => {
+      const session = await getUserSession();
+      if (!session) {
+        setLoading(false);
+        toast("Please login to use live collaboration");
+        router.push("/");
+        return;
+      }
 
-      try {
-        const resolvedRoomId = await getRoomIdBySlug(roomId);
-        if (resolvedRoomId === undefined) {
-          toast("Unable to find the room id! Please try again.")
-          return;
-        }
-        const room_number = resolvedRoomId.room_details?.id;
-        const sessionData = await getUserSession();
-        if (sessionData === null) {
-          if (!isMounted) return;
+      if (!roomId) {
+        setLoading(false);
+        return;
+      }
+
+      const resolvedRoom = await getRoomIdBySlug(roomId);
+      const room_number = resolvedRoom?.room_details?.id;
+
+      if (!room_number) {
+        toast("Invalid room! Redirecting...");
+        router.push("/");
+        return;
+      }
+
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
+      if (!wsUrl) {
+        toast.error("WebSocket server URL not found!");
+        setLoading(false);
+        return;
+      }
+
+      if ('error' in session) {
+        toast.error(session.error); throw new Error(session.error)
+      }
+
+      const socket = new WebSocket(`${wsUrl}?userId=${session.session.userId}`);
+      socketRef.current = socket;
+
+      connectionTimeout = setTimeout(() => {
+        if (socket.readyState !== WebSocket.OPEN) {
+          setError("Unable to connect to WebSocket");
+          toast.error("Unable to connect to real-time server!");
+          socket.close();
           setLoading(false);
-          toast.error("Invalid user please log in!!");
           router.push("/");
-          return;
         }
-        if ('error' in sessionData) {
-          toast.error(sessionData.error);
-          throw new Error(sessionData.error);
-        }
-        const userId = sessionData.session.userId;
-        const socket = new WebSocket(`${wsUrl}?userId=${userId}`);
-        socketRef.current = socket;
+      }, 4000);
 
-        socket.onopen = () => {
-          if (!isMounted) return;
-          setIsConnected(true);
-          setLoading(false);
+      socket.onopen = () => {
+        clearTimeout(connectionTimeout);
+        if (!isMounted) return;
 
-          socket.send(JSON.stringify({
+        setIsConnected(true);
+        setLoading(false);
+
+        socket.send(
+          JSON.stringify({
             type: "join_room",
             roomId: room_number
-          }));
+          })
+        );
 
-          toast.success(`Joined room ${roomId}`);
-        };
+        toast.success(`Joined room ${roomId}`);
+      };
 
-        socket.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            setShapes(data);
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          setShapes(data);
 
-          } catch (err) {
-            console.log("ℹ️ Non-JSON message:", event.data);
-          }
-        };
+        } catch (err) {
+          console.log("Non-JSON message:", event.data);
+        }
+      };
 
-        socket.onerror = (err) => {
-          if (!isMounted) return;
-          console.error("WebSocket error:", err);
-          setError("Failed to connect");
-          setLoading(false);
-          toast.error("WebSocket connection failed");
-          router.push("/");
-        };
-
-        socket.onclose = () => {
-          if (!isMounted) return;
-          setIsConnected(false);
-        };
-      } catch (err: any) {
-        console.error(err);
-        if (!isMounted) return;
-        setError(err.message || "Unknown error");
+      socket.onerror = () => {
+        clearTimeout(connectionTimeout);
+        setError("WebSocket error");
+        toast.error("Failed to connect!", {
+          description: "Redirecting to the main page!!"
+        });
         setLoading(false);
-        toast.error("Failed to connect to the room");
         router.push("/");
-      }
+      };
+
+      socket.onclose = () => {
+        clearTimeout(connectionTimeout);
+        setIsConnected(false);
+      };
     };
 
-    initSocket();
+    init();
 
     return () => {
       isMounted = false;
+      clearTimeout(connectionTimeout);
       socketRef.current?.close();
     };
-  }, [roomId, router, setLoading]);
+  }, [roomId]);
 
   return {
     socket: socketRef.current,
     newshapes: shapes,
     isConnected,
-    error,
+    error
   };
-}
+};

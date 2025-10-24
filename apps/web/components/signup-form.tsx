@@ -21,6 +21,7 @@ import { useState } from "react";
 import { LoginFormProps, SignUp } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
 
 export function SignupForm({
   onSuccess,
@@ -28,6 +29,7 @@ export function SignupForm({
   ...props
 }: LoginFormProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<SignUp>({
     name: "",
     email: "",
@@ -36,36 +38,43 @@ export function SignupForm({
 
   const signup_with_google = async () => {
     try {
+      setLoading(true);
       const response = await authClient.signIn.social({
         provider: "google",
       });
       if (!response.error) {
         onSuccess?.();
+        setLoading(false);
         toast.success("Signed in successfully with Google!");
       }
     } catch (e) {
       console.error(e);
+      setLoading(false);
       toast.error("Google sign-in failed. Please try again.");
     }
   };
 
   const signup_with_github = async () => {
     try {
+      setLoading(true);
       const response = await authClient.signIn.social({
         provider: "github",
       });
       if (!response.error) {
         onSuccess?.();
+        setLoading(false);
         toast.success("Signed in successfully with GitHub!");
       }
     } catch (e) {
       console.error(e);
+      setLoading(false);
       toast.error("GitHub sign-in failed. Please try again.");
     }
   };
 
   const signup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await authClient.signUp.email({
         name: formData.name,
@@ -74,10 +83,12 @@ export function SignupForm({
       });
       if (!response.error) {
         onSuccess?.();
+        setLoading(false);
         toast.success("Account created successfully! 🎉");
       }
     } catch (e) {
       console.error(e);
+      setLoading(false);
       toast.error("Failed to create account. Please try again.");
     }
   };
@@ -176,7 +187,7 @@ export function SignupForm({
           {/* Submit */}
           <Field className="mb-2">
             <Button type="submit" className="w-full hover:cursor-pointer">
-              Create Account
+              {loading ? <Spinner /> : "Create Account"}
             </Button>
           </Field>
 

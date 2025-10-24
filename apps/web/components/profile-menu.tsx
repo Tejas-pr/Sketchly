@@ -1,15 +1,24 @@
 "use client";
 
 import { useSession } from "@/hooks/useSession";
+import { cn } from "@workspace/ui/lib/utils";
 import { User } from "lucide-react";
 
 export function ProfileMenu() {
   const { user } = useSession();
 
   return (
-    <div className="flex items-center space-x-2 border rounded-md p-1 dark:border-gray-600 bg-white dark:bg-gray-800">
-      <User className="h-5 w-5 text-gray-800 dark:text-gray-200" />
-      <span className="text-gray-800 dark:text-gray-200 font-medium">
+    <div
+      className={cn(
+        "flex items-center gap-2 px-3 py-2 rounded-lg",
+        "bg-white dark:bg-neutral-900",
+        "border border-neutral-200 dark:border-neutral-700",
+        "hover:bg-neutral-100 dark:hover:bg-neutral-800",
+        "transition-colors cursor-pointer select-none"
+      )}
+    >
+      <User className="h-5 w-5 text-neutral-700 dark:text-neutral-300" />
+      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
         Hi {user?.name ?? "Guest"}
       </span>
     </div>

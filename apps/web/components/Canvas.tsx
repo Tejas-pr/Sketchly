@@ -3,8 +3,25 @@
 import { useSocket } from "@/hooks/useSocker";
 import { useEffect, useRef, useState } from "react";
 import { CanvasProps } from "@/lib/interfaces";
-import { Dock, DockIcon, DockItem, DockLabel } from "@workspace/ui/components/ui/shadcn-io/dock";
-import { Square, Circle, Triangle, Diamond, ArrowRight, Minus, Pencil, MousePointer2, Eraser, TypeOutline } from "lucide-react";
+import {
+  Dock,
+  DockIcon,
+  DockItem,
+  DockLabel,
+} from "@workspace/ui/components/ui/shadcn-io/dock";
+import {
+  Square,
+  Circle,
+  Triangle,
+  Diamond,
+  ArrowRight,
+  Minus,
+  Pencil,
+  MousePointer2,
+  Eraser,
+  TypeOutline,
+  ArrowLeftToLine,
+} from "lucide-react";
 import { Dropdownmenu } from "./dropdown-menu";
 import { ModeToggle } from "./theme-toggle";
 import { ProfileMenu } from "./profile-menu";
@@ -17,8 +34,18 @@ import { SocialMedia } from "./social-media";
 import { TotalUsers } from "./total-users";
 import { AI } from "./ai";
 import { getShapes, setShapes } from "@/lib/localStorage/localStorage";
-import { clearCanvas, getAllShapesByRoom, getRoomIdBySlug } from "@/app/actions/room";
+import {
+  clearCanvas,
+  getAllShapesByRoom,
+  getRoomIdBySlug,
+} from "@/app/actions/room";
 import { toast } from "@workspace/ui/components/sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
+import { useRouter } from "next/navigation";
 
 export default function Canvas({ roomId }: CanvasProps) {
   const myRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +62,7 @@ export default function Canvas({ roomId }: CanvasProps) {
   const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
   const [backgroundColor, setBackgroundColor] = useState<string>("");
   const [roomNumber, setRoomNumber] = useState<any>();
+  const navigate = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -57,13 +85,42 @@ export default function Canvas({ roomId }: CanvasProps) {
   }, [newshapes, drawing]);
 
   useEffect(() => {
+    if (!drawing || !mounted) return;
+    drawing.setSocket(socket);
+    drawing.setRoomId(roomNumber);
+    drawing.setTool(selectedShape);
+    drawing.setEditorValues({
+      strokeColor,
+      strokeWidth,
+      selectedFillStyle,
+      backgroundColor,
+    });
+
+    const themeToUse = theme === "system" ? systemTheme : theme;
+    if (themeToUse) {
+      drawing.setTheme(themeToUse);
+    }
+  }, [
+    selectedShape,
+    drawing,
+    theme,
+    systemTheme,
+    mounted,
+    strokeColor,
+    strokeWidth,
+    selectedFillStyle,
+    backgroundColor,
+  ]);
+
+  useEffect(() => {
     if (mounted && myRef.current) {
       const g = new Draw(myRef.current, socket);
       setDrawing(g);
       g.initMouseHandler();
 
       const initShapes = async () => {
-        let saved: Shape[] |  null = [];
+        if (!drawing || !mounted) return;
+        let saved: Shape[] | null = [];
 
         try {
           if (roomId) {
@@ -87,24 +144,6 @@ export default function Canvas({ roomId }: CanvasProps) {
       return () => g.destroy();
     }
   }, [roomId, mounted]);
-
-  useEffect(() => {
-    if (!drawing || !mounted) return;
-    drawing.setSocket(socket);
-    drawing.setRoomId(roomNumber);
-    drawing.setTool(selectedShape);
-    drawing.setEditorValues({
-      strokeColor,
-      strokeWidth,
-      selectedFillStyle,
-      backgroundColor,
-    });
-
-    const themeToUse = theme === "system" ? systemTheme : theme;
-    if (themeToUse) {
-      drawing.setTheme(themeToUse);
-    }
-  }, [selectedShape, drawing, theme, systemTheme, mounted, strokeColor, strokeWidth, selectedFillStyle, backgroundColor]);
 
   const shapes: ShapeOption[] = [
     { title: "Rectangle", icon: <Square />, id: "rectangle" },
@@ -171,6 +210,25 @@ export default function Canvas({ roomId }: CanvasProps) {
         <ProfileMenu />
         <ModeToggle />
         <SocialMedia />
+        {roomId && <Tooltip>
+          <TooltipTrigger>
+            <button className="px-3 py-3 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted">
+              <div className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>You are currently connected to room {roomId}.</TooltipContent>
+        </Tooltip>}
+        {roomId && <Tooltip>
+          <TooltipTrigger>
+            <button
+              className="px-3 py-2 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted"
+              onClick={() => navigate.push("/")}
+            >
+              <ArrowLeftToLine className="w-4 h-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Exit room {roomId}.</TooltipContent>
+        </Tooltip>}
       </div>
 
       <div className="hidden sm:flex fixed top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">

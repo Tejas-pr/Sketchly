@@ -29,7 +29,7 @@ export function SocialMedia() {
           <Tooltip key={i}>
             <TooltipTrigger asChild>
               <button
-                className="w-8 h-8 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted"
+                className="px-3 py-2 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted"
                 onClick={() => window.open(item.link, "_blank")}
                 aria-label={item.name}
               >

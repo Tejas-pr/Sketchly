@@ -45,6 +45,9 @@
     "GOOGLE_CLIENT_SECRET",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
-    "NODE_ENV"
+    "NODE_ENV",
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "WS_PORT"
   ]
 }

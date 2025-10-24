@@ -20,9 +20,9 @@ export function TotalUsers() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-3 shadow-sm w-fit">
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-muted/30 p-2 shadow-sm w-fit">
       {/* Visitors */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
+      <div className="flex items-center gap-2 px-2 py-1 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
         <Globe className="w-4 h-4 text-muted-foreground" />
         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
         <p className="text-xs text-muted-foreground">Visitors:</p>

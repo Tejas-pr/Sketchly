@@ -56,7 +56,7 @@ export function AI({ onShapeCreated }: AIProps) {
       <div className="relative flex items-center w-full">
         {/* Gradient border */}
         <div
-          className="relative w-full rounded-xl p-[2px]"
+          className="relative w-full rounded-2xl p-[2px]"
           style={{
             background: "linear-gradient(90deg, #ec4899, #a855f7, #3b82f6)",
             backgroundSize: "200% 200%",
@@ -64,7 +64,7 @@ export function AI({ onShapeCreated }: AIProps) {
           }}
         >
           {/* Input Container */}
-          <div className="relative flex items-center bg-background rounded-[11px]">
+          <div className="relative flex items-center bg-background rounded-xl">
             {/* Bot icon */}
             <Bot className="absolute left-3 text-muted-foreground w-5 h-5 z-10 pointer-events-none" />
 

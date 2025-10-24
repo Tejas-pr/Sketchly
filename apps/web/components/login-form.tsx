@@ -16,13 +16,11 @@ import { useState } from "react";
 import { LoginFormProps, SignIn } from "@/lib/interfaces";
 import { toast } from "@workspace/ui/components/sonner";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
 
-export function LoginForm({
-  onSuccess,
-  className,
-  ...props
-}: LoginFormProps) {
+export function LoginForm({ onSuccess, className, ...props }: LoginFormProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<SignIn>({
     email: "",
     password: "",
@@ -30,30 +28,38 @@ export function LoginForm({
 
   const login_with_google = async () => {
     try {
+      setLoading(true);
       const response = await authClient.signIn.social({
         provider: "google",
       });
       if (!response.error) {
         onSuccess?.();
         toast.success("Signed in successfully with Google!");
+        setLoading(false);
+        router.push("/");
       }
     } catch (e) {
       console.error(e);
+      setLoading(false);
       toast.error("Google sign-in failed. Please try again.");
     }
   };
 
   const login_with_github = async () => {
     try {
+      setLoading(true);
       const response = await authClient.signIn.social({
         provider: "github",
       });
       if (!response.error) {
         onSuccess?.();
         toast.success("Signed in successfully with GitHub!");
+        setLoading(false);
+        router.push("/");
       }
     } catch (e) {
       console.error(e);
+      setLoading(false);
       toast.error("GitHub sign-in failed. Please try again.");
     }
   };
@@ -61,17 +67,29 @@ export function LoginForm({
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const response = await authClient.signIn.email({
         email: formData.email,
         password: formData.password,
       });
+
       if (!response.error) {
         onSuccess?.();
         toast.success("Logged in successfully! 🎉");
+        setLoading(false);
+        router.push("/");
+        return;
+      }
+
+      if (response.error) {
+        toast.error(response.error.message || "Invalid login credentials");
+        setLoading(false);
+        return;
       }
     } catch (e) {
       console.error(e);
-      toast.error("Login failed. Please check your credentials.");
+      setLoading(false);
+      toast.error("Login failed. Please try again.");
     }
   };
 
@@ -144,7 +162,7 @@ export function LoginForm({
           {/* Submit */}
           <Field className="mb-2">
             <Button type="submit" className="w-full hover:cursor-pointer">
-              Log in
+              {loading ? <Spinner /> : "Log in"}
             </Button>
           </Field>
 

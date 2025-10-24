@@ -62,7 +62,7 @@ export function Dropdownmenu({ onResetCanvas }: DropdownmenuProps) {
 
         <DropdownMenuContent className="w-56" align="start">
           <DropdownMenuLabel>
-            <div className="flex items-center justify-start gap-2 font-semibold text-gray-800 dark:text-gray-100">
+            <div onClick={() => router.push("/")} className="flex items-center justify-start gap-2 font-semibold text-gray-800 dark:text-gray-100 hover:cursor-pointer">
               SKETCHLY
             </div>
           </DropdownMenuLabel>
