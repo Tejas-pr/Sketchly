@@ -119,9 +119,7 @@ export default function Canvas({ roomId }: CanvasProps) {
       g.initMouseHandler();
 
       const initShapes = async () => {
-        if (!drawing || !mounted) return;
         let saved: Shape[] | null = [];
-
         try {
           if (roomId) {
             const allRoomShapes = await handleAllShapes();
@@ -212,26 +210,28 @@ export default function Canvas({ roomId }: CanvasProps) {
         <SocialMedia />
         {roomId && <Tooltip>
           <TooltipTrigger>
-            <button className="px-3 py-3 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted">
+            <div className="px-3 py-3 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted">
               <div className={`h-2 w-2 rounded-full ${isConnected ? "bg-yellow-400" : "bg-red-400"} animate-pulse`} />
-            </button>
+            </div>
           </TooltipTrigger>
-          <TooltipContent>You are currently connected to room {roomId}.</TooltipContent>
+          <TooltipContent>
+            {isConnected ? `You are currently connected to room ${roomId}.`: `Error connect to server. Please try again!!`}
+          </TooltipContent>
         </Tooltip>}
         {roomId && <Tooltip>
           <TooltipTrigger>
-            <button
+            <div
               className="px-3 py-2 flex items-center justify-center rounded-md border-2 transition hover:cursor-pointer hover:bg-muted"
               onClick={() => navigate.push("/")}
             >
               <ArrowLeftToLine className="w-4 h-4" />
-            </button>
+            </div>
           </TooltipTrigger>
           <TooltipContent>Exit room {roomId}.</TooltipContent>
         </Tooltip>}
       </div>
 
-      <div className="hidden sm:flex fixed top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">
+      {!roomId && <div className="top-18 fixed md:top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">
         <AI
           onShapeCreated={(newShape) => {
             if (drawing) {
@@ -241,7 +241,7 @@ export default function Canvas({ roomId }: CanvasProps) {
             }
           }}
         />
-      </div>
+      </div>}
 
       <div className="hidden lg:flex fixed left-3 top-1/2 -translate-y-1/2 h-auto max-h-[85vh] overflow-y-auto z-40">
         <DrawingEditors

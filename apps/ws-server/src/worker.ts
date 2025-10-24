@@ -5,7 +5,7 @@ import { prisma } from "@repo/db";
 const worker = new Worker('shapes-worker', async (job) => {
     const { roomId, shapes, userId } = job.data;
 
-    console.log("Worker processing job:", job.id, job.data);
+    console.log("Worker processing job:", job.id);
     await prisma.shapes.create({
         data: {
             roomId,

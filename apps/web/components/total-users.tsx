@@ -35,7 +35,7 @@ export function TotalUsers() {
       </div>
 
       {/* AI Users */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-background/80 hover:bg-accent/40 transition-colors">
         <User className="w-4 h-4 text-muted-foreground" />
         <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
         <p className="text-xs text-muted-foreground">AI Users:</p>

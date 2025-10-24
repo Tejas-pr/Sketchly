@@ -98,9 +98,8 @@ export function AI({ onShapeCreated }: AIProps) {
         </div>
       </div>
 
-      {/* Mobile-only helper text */}
-      <p className="text-[10px] sm:text-xs text-center text-muted-foreground mt-1 sm:mt-2 block sm:hidden">
-        Try typing: “Draw a blue triangle with stroke 3”
+      <p className="text-[10px] sm:text-xs text-center text-muted-foreground mt-1 sm:mt-2 block">
+        Try typing: “Draw a triangle with stroke 3”
       </p>
     </div>
   );
