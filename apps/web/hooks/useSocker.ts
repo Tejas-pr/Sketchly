@@ -18,6 +18,10 @@ export const useSocket = (roomId?: string) => {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    if (!roomId) {
+      setLoading(false);
+      return;
+    }
     let isMounted = true;
     let connectionTimeout: NodeJS.Timeout;
 
@@ -29,11 +33,6 @@ export const useSocket = (roomId?: string) => {
           description: "Redirecting to log in page"
         });
         router.push("/login");
-        return;
-      }
-
-      if (!roomId) {
-        setLoading(false);
         return;
       }
 
