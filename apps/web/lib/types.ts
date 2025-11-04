@@ -146,6 +146,9 @@ export type SessionData = {
 
 export type AIProps = {
   onShapeCreated: (shape: Shape) => void;
+  selectedFillStyle: string;
+  strokeWidth: number;
+  strokeColorvalue: string;
 };
 
 export type PopupType = "login" | "signup" | "live-collaboration" | null;

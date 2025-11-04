@@ -57,7 +57,7 @@ export default function Canvas({ roomId }: CanvasProps) {
   const [smallScreen, setSmallScreen] = useState<boolean>(false);
 
   // Editors
-  const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
+  const [strokeColorvalue, setStrokeColor] = useState<string>("#FFFFFF");
   const [strokeWidth, setStrokeWidth] = useState<number>(1);
   const [selectedFillStyle, setSelectedFillStyle] = useState<string>("solid");
   const [backgroundColor, setBackgroundColor] = useState<string>("");
@@ -89,24 +89,23 @@ export default function Canvas({ roomId }: CanvasProps) {
     drawing.setSocket(socket);
     drawing.setRoomId(roomNumber);
     drawing.setTool(selectedShape);
-    drawing.setEditorValues({
-      strokeColor,
-      strokeWidth,
-      selectedFillStyle,
-      backgroundColor,
-    });
-
     const themeToUse = theme === "system" ? systemTheme : theme;
     if (themeToUse) {
       drawing.setTheme(themeToUse);
     }
+    drawing.setEditorValues({
+      strokeColorvalue,
+      strokeWidth,
+      selectedFillStyle,
+      backgroundColor,
+    });
   }, [
     selectedShape,
     drawing,
     theme,
     systemTheme,
     mounted,
-    strokeColor,
+    strokeColorvalue,
     strokeWidth,
     selectedFillStyle,
     backgroundColor,
@@ -233,8 +232,12 @@ export default function Canvas({ roomId }: CanvasProps) {
 
       {!roomId && <div className="top-18 fixed md:top-5 left-1/2 -translate-x-1/2 z-40 w-full max-w-md justify-center">
         <AI
+          selectedFillStyle={selectedFillStyle}
+          strokeColorvalue={strokeColorvalue}
+          strokeWidth={strokeWidth}
           onShapeCreated={(newShape) => {
             if (drawing) {
+              console.log(">>>>>>>>>>>>>>>>>.newShape", newShape);
               drawing.addShape(newShape);
               const currentShapes = drawing.getAllShapes();
               setShapes(currentShapes);
@@ -245,7 +248,7 @@ export default function Canvas({ roomId }: CanvasProps) {
 
       <div className="hidden lg:flex fixed left-3 top-1/2 -translate-y-1/2 h-auto max-h-[85vh] overflow-y-auto z-40">
         <DrawingEditors
-          strokeColor={strokeColor}
+          strokeColor={strokeColorvalue}
           setStrokeColor={setStrokeColor}
           strokeWidth={strokeWidth}
           setStrokeWidth={setStrokeWidth}

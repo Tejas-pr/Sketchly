@@ -12,7 +12,7 @@ import { Spinner } from "@workspace/ui/components/ui/shadcn-io/spinner";
 import { usePopup } from "@/providers/popup-provider";
 import { AIProps } from "@/lib/types";
 
-export function AI({ onShapeCreated }: AIProps) {
+export function AI({ onShapeCreated, selectedFillStyle, strokeColorvalue, strokeWidth }: AIProps) {
   const [message, setMessage] = useState("");
   const [submit, setSubmit] = useState(false);
   const { openPopup } = usePopup();
@@ -31,7 +31,7 @@ export function AI({ onShapeCreated }: AIProps) {
     }
 
     try {
-      const shape = await generateShape(prompt, theme);
+      const shape = await generateShape(prompt, theme, selectedFillStyle, strokeColorvalue, strokeWidth);
       if (shape) onShapeCreated(shape);
     } catch (error) {
       console.error("AI generation failed:", error);

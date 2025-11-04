@@ -1,5 +1,6 @@
 "use client";
 
+import { strokeColors } from "@/lib/editor-tools";
 import { resetAllShapes, setShapes } from "@/lib/localStorage/localStorage";
 import { Shape, Tools } from "@/lib/types";
 import rough from "roughjs";
@@ -17,7 +18,7 @@ export class Draw {
   private tool: Tools | null = null;
   private theme: string | undefined = "dark";
 
-  private stroke = "#000000";
+  private stroke = "";
   private strokeWidth = 1;
   private fillStyle = "solid";
   private fillColor: string | undefined = "";
@@ -84,12 +85,12 @@ export class Draw {
   }
 
   setEditorValues(values: {
-    strokeColor?: string;
+    strokeColorvalue?: string;
     strokeWidth?: number;
     selectedFillStyle?: string;
     backgroundColor?: string;
   }) {
-    if (values.strokeColor) this.stroke = values.strokeColor;
+    if (values.strokeColorvalue) this.stroke = values.strokeColorvalue;
     if (values.strokeWidth) this.strokeWidth = values.strokeWidth;
     if (values.selectedFillStyle) this.fillStyle = values.selectedFillStyle;
     if (values.backgroundColor) this.fillColor = values.backgroundColor;
